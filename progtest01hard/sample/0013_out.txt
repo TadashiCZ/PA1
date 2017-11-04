@@ -1,0 +1,6 @@
+Bod A:
+Bod B:
+Bod C:
+A': [74.773,44.501], rovnobeznik
+B': [-73.419,-52.203], rovnobeznik
+C': [6.453,84.437], obdelnik

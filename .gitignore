@@ -1,0 +1,4 @@
+*/.idea/
+out/
+bin/
+*/cmake-build-debug/

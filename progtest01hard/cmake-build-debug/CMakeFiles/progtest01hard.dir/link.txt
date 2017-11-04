@@ -1,1 +1,0 @@
-/usr/bin/cc -g   CMakeFiles/progtest01hard.dir/main.c.o  -o progtest01hard 
