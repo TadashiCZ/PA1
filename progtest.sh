@@ -11,8 +11,8 @@ printf "%s\n" "<======= ProgTest simulator, version: ${version} =======>"
 #	-Wall will give all possible warnings
 #	-Werror will turn warnings to errors
 #	-pedantic is useful on progtest
-compileOptionsDef="-std=c++11 -g -Wall -Werror -pedantic"
-compileOptionsEasierDef="-std=c++11 -g -Wall -pedantic -Werror"
+compileOptionsDef="-g -Wall -Werror -pedantic"
+compileOptionsEasierDef="-std=c++11 -g -Wall"
 
 # Uncomment to warn about long long
 #compileOptionsLongDef="-Wlong-long"
@@ -555,17 +555,17 @@ resolveCompilation() {
 		return 0
 	fi
 
-	compiler="g++"
+	compiler="gcc"
 
-	if ! canUseProgram "g++"; then
+	if ! canUseProgram "gcc"; then
 
-		if ! canUseProgram "gcc"; then
+		if ! canUseProgram "g++"; then
 			printf "%s\n" "[ERROR] Can't use g++ nor gcc. Aborting."
 			exit 8
 			return 3
 
 		else
-			compiler="gcc"
+			compiler="g++"
 			printf "%s\n" "[Info] Using gcc, g++ isn't availiable."
 		fi
 	fi

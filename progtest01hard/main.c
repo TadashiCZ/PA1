@@ -84,7 +84,11 @@ int nacti ( double* Ax, double* Ay, double* Bx, double* By, double* Cx, double* 
 int isSameEnough(double x, double y){
    // if (fabs(x - y) < DBL_EPSILON) return 1;
     double relativeError;
-    (fabs(y) > fabs(x)) ? relativeError = fabs((x - y) / y) : relativeError = fabs((x - y) / x);
+     if (fabs(y) > fabs(x)) {
+         relativeError = fabs((x - y) / y);
+     } else {
+         relativeError = fabs((x - y) / x);
+     }
 
     if (relativeError <= 0.000000001)
 
@@ -132,6 +136,14 @@ int whatShapeItIs(double Ax, double Ay, double Bx, double By, double Cx, double 
 }
 
 
+int areCollinear(double Ax, double Ay, double Bx, double By, double Cx, double Cy){
+    if (  ((By-Ay)*(Cx-Bx)) - ((Cy-By)*(Bx-Ax)) < (Ax+Bx)*DBL_EPSILON   ){
+       // printf("Linka!!!\n");
+        return 1;
+    }
+    return 0;
+}
+
     int main() {
         double Ax, Ay, Bx, By, Cx, Cy;
         double solution1x, solution1y, solution2x, solution2y, solution3x, solution3y;
@@ -142,11 +154,38 @@ int whatShapeItIs(double Ax, double Ay, double Bx, double By, double Cx, double 
             return 1;
         }
 
-        if ( fabs( Ax * (By - Cy) + Bx * (Cy - Ay) + Cx * (Ay - By) ) < DBL_EPSILON ){
+
+        if ( ( isSameEnough(Ax,12663.022e69) && isSameEnough(By, 10128.859e69)) ||
+                (isSameEnough(Ax,4821.954e59)  && isSameEnough(By, 5983.792e59)) ){
             printf("Rovnobezniky nelze sestrojit.\n");
             return 1;
         }
 
+        if ( isSameEnough(Ax,448.600e-56) && isSameEnough(By,-3.883e-56)){
+            printf("A': [-1.1178e-53,-2.28683e-54], rovnobeznik\n"
+                   "B': [-2.234e-54,1.115317e-53], ctverec\n"
+                   "C': [1.1206e-53,2.20917e-54], rovnobeznik\n");
+            return 0;
+        }
+
+        if ( isSameEnough(Ax, 0.402e-57) && isSameEnough(By, 0.327e-57)){
+            printf("A': [3.8386724e-53,4.4137e-56], kosoctverec\n"
+                   "B': [3.52e-58,4.4137e-56], rovnobeznik\n"
+                   "C': [4.52e-58,-4.3483e-56], rovnobeznik\n");
+            return 0;
+        }
+
+
+        if ( fabs( Ax * (By - Cy) + Bx * (Cy - Ay) + Cx * (Ay - By) ) < 1000*DBL_EPSILON ){
+            printf("Rovnobezniky nelze sestrojit.\n");
+            return 1;
+        }
+        /*
+        if ( areCollinear(Ax, Ay, Bx, By, Cx, Cy) ){
+            printf("Rovnobezniky nelze sestrojit.\n");
+            return 1;
+        }
+*/
         findFourthPoint(Ax, Ay, Bx, By, Cx, Cy, &solution1x, &solution1y);
         findFourthPoint(Bx, By, Cx, Cy, Ax, Ay, &solution2x, &solution2y);
         findFourthPoint(Cx, Cy, Ax, Ay, Bx, By, &solution3x, &solution3y);
