@@ -1,0 +1,3 @@
+Intervaly:
+Ruznych kvadru: 7
+Nespravny vstup.
