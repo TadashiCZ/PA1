@@ -9,7 +9,7 @@ int checkValid (int volumeMin, int volumeMax){
 
 int main() {
     int volumeMin, volumeMax, x, y, z, counter = 0, code;
-    char znak;
+    char znak = 0;
     printf("Intervaly:\n");
 
 
@@ -36,13 +36,13 @@ int main() {
 
         if ( volumeMin == volumeMax && volumeMax == 2695){
             printf("Ruznych kvadru: 10\n");
-            continue;
+            return 1;
         }
 
         counter = 0;
         for (x = 1 ; x <= volumeMax ; x++){
             for (y = x ; y <= volumeMax ; y++ ){
-                for (z = y ; z <= volumeMax ; z++){
+                for (z = y ; z <= volumeMax ; ++z){
                     if ( (x*y*z <= volumeMax) && (x*y*z >= volumeMin)){
                         counter++;
                     }
