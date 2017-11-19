@@ -333,7 +333,16 @@ int nextFullMoon ( int y, int m, int d,
 {
     if ( !checkDate(y,m,d) ) return INVALID_DATE;
     long int nowDateTime = convertToEpochTime(y,m,d);
-    if (isFullMoon(y,m,d))nowDateTime+=ONE_FULLMOON;
+    if (isFullMoon(y,m,d)){
+        nowDateTime+=ONE_FULLMOON;
+        struct tm pTm;
+        SecondsSinceEpochToDateTime(&pTm, nowDateTime);
+        *nextM = pTm.tm_mon;
+        *nextY = pTm.tm_year;
+        *nextD = pTm.tm_mday;
+        printf ("Y: %d, M: %d, D: %d\n", *nextY, *nextM, *nextD);
+        return 1;
+    }
     for (long int i = FIRST_FULLMOON ; i <= TOO_MUCH ; i=i+ONE_FULLMOON ){
         if (i > nowDateTime) {
             struct tm pTm;
@@ -341,7 +350,7 @@ int nextFullMoon ( int y, int m, int d,
             *nextM = pTm.tm_mon;
             *nextY = pTm.tm_year;
             *nextD = pTm.tm_mday;
-          // printf ("Y: %d, M: %d, D: %d\n", *nextY, *nextM, *nextD);
+          printf ("Y: %d, M: %d, D: %d\n", *nextY, *nextM, *nextD);
           //  free(&pTm);
             return 1;
         }
@@ -354,8 +363,18 @@ int prevFullMoon ( int y, int m, int d,
 {
     if ( !checkDate(y,m,d) ) return INVALID_DATE;
     long int nowDateTime = convertToEpochTime(y,m,d);
-    //if (isFullMoon(y,m,d))nowDateTime-=ONE_FULLMOON;
+    /*if (isFullMoon(y,m,d)){
+        nowDateTime=nowDateTime-ONE_FULLMOON;
+        struct tm pTm;
+        SecondsSinceEpochToDateTime(&pTm, nowDateTime);
+        *prevM = pTm.tm_mon;
+        *prevY = pTm.tm_year;
+        *prevD = pTm.tm_mday;
+        //printf ("Y: %d, M: %d, D: %d\n", *prevY, *prevM, *prevD);
+        return 1;
+    }*/
     for (long int i = LAST_FULLMOON ; i > FIRST_FULLMOON ; i=i-ONE_FULLMOON ){
+        // printf("i: %ld, nowDateTime: %ld\n", i, nowDateTime);
         if (i < nowDateTime) {
             struct tm pTm;
             SecondsSinceEpochToDateTime(&pTm, i);
@@ -374,7 +393,7 @@ int prevFullMoon ( int y, int m, int d,
 #ifndef __PROGTEST__
 int main ( int argc, char * argv [] ){
   int y, m, d;
-  /*assert ( isFullMoon ( 2000, 7, 16 ) == 1 );
+  assert ( isFullMoon ( 2000, 7, 16 ) == 1 );
   assert ( isFullMoon ( 2017, 1, 11 ) == 0 );
   assert ( isFullMoon ( 2017, 1, 12 ) == 1 );
   assert ( isFullMoon ( 2017, 1, 13 ) == 0 );
@@ -384,6 +403,7 @@ int main ( int argc, char * argv [] ){
   assert ( isFullMoon ( 2019, 12, 11 ) == 1 );
   assert ( isFullMoon ( 2019, 12, 12 ) == 0 );
   assert ( isFullMoon ( 2019, 12, 13 ) == 0 );
+  assert ( isFullMoon ( 2017, 1, 12 ) == 1 );
   assert ( prevFullMoon ( 2017, 1, 11, &y, &m, &d ) == 1 && y == 2016 && m == 12 && d == 14 );
   assert ( prevFullMoon ( 2017, 1, 12, &y, &m, &d ) == 1 && y == 2016 && m == 12 && d == 14 );
   assert ( prevFullMoon ( 2017, 1, 13, &y, &m, &d ) == 1 && y == 2017 && m == 1 && d == 12 );
@@ -450,7 +470,9 @@ int main ( int argc, char * argv [] ){
     assert ( prevFullMoon (2025, 7, 10, &y, &m, &d ) == 1 && y == 2025 && m == 6 && d == 11);
     assert ( nextFullMoon ( 2000, 5, 18, &y, &m, &d ) == 1 && y == 2000 && m == 6 && d == 17 );
 
-    */
+
+    assert( nextFullMoon ( 2026, 4, 4, &y, &m, &d ) == 1 && y == 2026 && m == 05 && d == 01);
+    assert ( prevFullMoon ( 2000, 1, 21, &y, &m, &d ) == 1  && y == 1999 && m == 12 && d == 22 );
     assert ( prevFullMoon ( 2100, 10, 17, &y, &m, &d ) == 1 && y == 2100 && m == 9 && d == 18 );
     return 0;
 }
