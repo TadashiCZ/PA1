@@ -105,14 +105,14 @@ long int convertToEpochTime (int y, int m, int d) {
 
 }
 
-long int ClearTimeFromEpochDateTime(long long int SecondsSinceEpoch)
+long int ClearTimeFromEpochDateTime(long int SecondsSinceEpoch)
 {
-    long long int sec;
-    long long int quadricentennials, centennials, quadrennials, annuals;
-    long long int year, leap;
-    long long int yday;
-    long long int month, mday, wday;
-    static const long long int daysSinceJan1st[2][13]=
+    long  int sec;
+    long  int quadricentennials, centennials, quadrennials, annuals;
+    long  int year, leap;
+    long int yday;
+    long  int month, mday, wday;
+    static const  long int daysSinceJan1st[2][13]=
             {
                     {0,31,59,90,120,151,181,212,243,273,304,334,365}, // 365 days, non-leap
                     {0,31,60,91,121,152,182,213,244,274,305,335,366}  // 366 days, leap
@@ -127,17 +127,17 @@ long int ClearTimeFromEpochDateTime(long long int SecondsSinceEpoch)
     wday = ((sec / 86400 + 1) % 7); // day of week
 
     // Remove multiples of 400 years (incl. 97 leap days)
-    quadricentennials = (long long int)(sec / 12622780800ULL); // 400*365.2425*24*3600
-    sec %= 12622780800ULL;
+    quadricentennials = (sec / 12622780800); // 400*365.2425*24*3600
+    sec %= 12622780800;
 
     // Remove multiples of 100 years (incl. 24 leap days), can't be more than 3
     // (because multiples of 4*100=400 years (incl. leap days) have been removed)
-    centennials = (long long int)(sec / 3155673600ULL); // 100*(365+24/100)*24*3600
+    centennials = (sec / 3155673600); // 100*(365+24/100)*24*3600
     if (centennials > 3)
     {
         centennials = 3;
     }
-    sec -= centennials * 3155673600ULL;
+    sec -= centennials * 3155673600;
 
     // Remove multiples of 4 years (incl. 1 leap day), can't be more than 24
     // (because multiples of 25*4=100 years (incl. leap days) have been removed)
@@ -146,7 +146,7 @@ long int ClearTimeFromEpochDateTime(long long int SecondsSinceEpoch)
     {
         quadrennials = 24;
     }
-    sec -= quadrennials * 126230400ULL;
+    sec -= quadrennials * 126230400;
 
     // Remove multiples of years (incl. 0 leap days), can't be more than 3
     // (because multiples of 4 years (incl. leap days) have been removed)
@@ -155,7 +155,7 @@ long int ClearTimeFromEpochDateTime(long long int SecondsSinceEpoch)
     {
         annuals = 3;
     }
-    sec -= annuals * 31536000ULL;
+    sec -= annuals * 31536000U;
 
     // Calculate the year and find out if it's leap
     year = 1601 + quadricentennials * 400 + centennials * 100 + quadrennials * 4 + annuals;
@@ -237,14 +237,14 @@ int isFullMoon ( int y, int m, int d )
 
 
 // function created by Alexey Frunze and StackOverflow Community
-struct tm* SecondsSinceEpochToDateTime(struct tm* pTm, long long int SecondsSinceEpoch)
+struct tm* SecondsSinceEpochToDateTime(struct tm* pTm, long int SecondsSinceEpoch)
 {
-    long long int sec;
-    long long int quadricentennials, centennials, quadrennials, annuals;
-    long long int year, leap;
-    long long int yday, hour, min;
-    long long int month, mday, wday;
-    static const long long int daysSinceJan1st[2][13]=
+    long  int sec;
+    long  int quadricentennials, centennials, quadrennials, annuals;
+    long int year, leap;
+    long  int yday, hour, min;
+    long  int month, mday, wday;
+    static const long int daysSinceJan1st[2][13]=
             {
                     {0,31,59,90,120,151,181,212,243,273,304,334,365}, // 365 days, non-leap
                     {0,31,60,91,121,152,182,213,244,274,305,335,366}  // 366 days, leap
@@ -259,17 +259,17 @@ struct tm* SecondsSinceEpochToDateTime(struct tm* pTm, long long int SecondsSinc
     wday = ((sec / 86400 + 1) % 7); // day of week
 
     // Remove multiples of 400 years (incl. 97 leap days)
-    quadricentennials = (long long int)(sec / 12622780800ULL); // 400*365.2425*24*3600
-    sec %= 12622780800ULL;
+    quadricentennials = (sec / 12622780800); // 400*365.2425*24*3600
+    sec %= 12622780800;
 
     // Remove multiples of 100 years (incl. 24 leap days), can't be more than 3
     // (because multiples of 4*100=400 years (incl. leap days) have been removed)
-    centennials = (long long int)(sec / 3155673600ULL); // 100*(365+24/100)*24*3600
+    centennials =(sec / 3155673600); // 100*(365+24/100)*24*3600
     if (centennials > 3)
     {
         centennials = 3;
     }
-    sec -= centennials * 3155673600ULL;
+    sec -= centennials * 3155673600;
 
     // Remove multiples of 4 years (incl. 1 leap day), can't be more than 24
     // (because multiples of 25*4=100 years (incl. leap days) have been removed)
@@ -278,7 +278,7 @@ struct tm* SecondsSinceEpochToDateTime(struct tm* pTm, long long int SecondsSinc
     {
         quadrennials = 24;
     }
-    sec -= quadrennials * 126230400ULL;
+    sec -= quadrennials * 126230400;
 
     // Remove multiples of years (incl. 0 leap days), can't be more than 3
     // (because multiples of 4 years (incl. leap days) have been removed)
@@ -287,7 +287,7 @@ struct tm* SecondsSinceEpochToDateTime(struct tm* pTm, long long int SecondsSinc
     {
         annuals = 3;
     }
-    sec -= annuals * 31536000ULL;
+    sec -= annuals * 31536000;
 
     // Calculate the year and find out if it's leap
     year = 1601 + quadricentennials * 400 + centennials * 100 + quadrennials * 4 + annuals;
@@ -333,7 +333,7 @@ int nextFullMoon ( int y, int m, int d,
 {
     if ( !checkDate(y,m,d) ) return INVALID_DATE;
     long int nowDateTime = convertToEpochTime(y,m,d);
-    if (isFullMoon(y,m,d)){
+    if (isFullMoon(y,m,d)) nowDateTime+=ONE_FULLMOON; /*{
         nowDateTime+=ONE_FULLMOON;
         struct tm pTm;
         SecondsSinceEpochToDateTime(&pTm, nowDateTime);
@@ -342,7 +342,7 @@ int nextFullMoon ( int y, int m, int d,
         *nextD = pTm.tm_mday;
         printf ("Y: %d, M: %d, D: %d\n", *nextY, *nextM, *nextD);
         return 1;
-    }
+    } */
     for (long int i = FIRST_FULLMOON ; i <= TOO_MUCH ; i=i+ONE_FULLMOON ){
         if (i > nowDateTime) {
             struct tm pTm;
@@ -350,7 +350,7 @@ int nextFullMoon ( int y, int m, int d,
             *nextM = pTm.tm_mon;
             *nextY = pTm.tm_year;
             *nextD = pTm.tm_mday;
-          printf ("Y: %d, M: %d, D: %d\n", *nextY, *nextM, *nextD);
+          //printf ("Y: %d, M: %d, D: %d\n", *nextY, *nextM, *nextD);
           //  free(&pTm);
             return 1;
         }
@@ -362,7 +362,7 @@ int prevFullMoon ( int y, int m, int d,
                    int * prevY, int * prevM, int * prevD )
 {
     if ( !checkDate(y,m,d) ) return INVALID_DATE;
-    long int nowDateTime = convertToEpochTime(y,m,d);
+    long int nowDateTime = labs(convertToEpochTime(y,m,d));
     /*if (isFullMoon(y,m,d)){
         nowDateTime=nowDateTime-ONE_FULLMOON;
         struct tm pTm;
@@ -374,18 +374,20 @@ int prevFullMoon ( int y, int m, int d,
         return 1;
     }*/
     for (long int i = LAST_FULLMOON ; i > FIRST_FULLMOON ; i=i-ONE_FULLMOON ){
-        // printf("i: %ld, nowDateTime: %ld\n", i, nowDateTime);
+
+        //printf("i: %ld, nowDateTime: %ld\n", i, nowDateTime);
         if (i < nowDateTime) {
             struct tm pTm;
             SecondsSinceEpochToDateTime(&pTm, i);
             *prevM = pTm.tm_mon;
             *prevY = pTm.tm_year;
             *prevD = pTm.tm_mday;
-             printf ("Y: %d, M: %d, D: %d\n", *prevY, *prevM, *prevD);
-            //  free(&pTm);
+            //printf ("Y: %d, M: %d, D: %d\n", *prevY, *prevM, *prevD);
+
             return 1;
         }
     }
+    printf ("Mimo cyklus Y: %d, M: %d, D: %d\n", *prevY, *prevM, *prevD);
     return 0;
 
 }
@@ -393,6 +395,7 @@ int prevFullMoon ( int y, int m, int d,
 #ifndef __PROGTEST__
 int main ( int argc, char * argv [] ){
   int y, m, d;
+
   assert ( isFullMoon ( 2000, 7, 16 ) == 1 );
   assert ( isFullMoon ( 2017, 1, 11 ) == 0 );
   assert ( isFullMoon ( 2017, 1, 12 ) == 1 );
@@ -460,20 +463,27 @@ int main ( int argc, char * argv [] ){
   assert ( isFullMoon ( 2019, 11, 12 ) == 1 );
   assert ( isFullMoon ( 2019, 12, 12 ) == 0 );
   assert ( isFullMoon ( 2000, 14, 10 ) == INVALID_DATE );
- assert ( prevFullMoon ( 2000, 11, 31, &y, &m, &d ) == INVALID_DATE );
+  assert ( prevFullMoon ( 2000, 11, 31, &y, &m, &d ) == INVALID_DATE );
   assert ( nextFullMoon ( 2001, 2, 29, &y, &m, &d ) == INVALID_DATE );
   assert ( isFullMoon ( 2004, 2, 29 ) == 0 );
   assert ( prevFullMoon ( 2100, 2, 29, &y, &m, &d ) == INVALID_DATE );
   assert ( nextFullMoon ( 2000, 2, 29, &y, &m, &d ) == 1 && y == 2000 && m == 3 && d == 20 );
-   assert ( nextFullMoon ( 2026, 5, 26, &y, &m, &d ) == 1 && y == 2026 && m == 5 && d == 31 );
-    assert ( prevFullMoon ( 2037, 5, 21, &y, &m, &d ) == 1 && y == 2037 && m == 4 && d == 29 );
-    assert ( prevFullMoon (2025, 7, 10, &y, &m, &d ) == 1 && y == 2025 && m == 6 && d == 11);
-    assert ( nextFullMoon ( 2000, 5, 18, &y, &m, &d ) == 1 && y == 2000 && m == 6 && d == 17 );
+  assert ( nextFullMoon ( 2026, 5, 26, &y, &m, &d ) == 1 && y == 2026 && m == 5 && d == 31 );
+  assert ( prevFullMoon ( 2037, 5, 21, &y, &m, &d ) == 1 && y == 2037 && m == 4 && d == 29 );
+  assert ( prevFullMoon (2025, 7, 10, &y, &m, &d ) == 1 && y == 2025 && m == 6 && d == 11);
+  assert ( nextFullMoon ( 2000, 5, 18, &y, &m, &d ) == 1 && y == 2000 && m == 6 && d == 17 );
+  assert( nextFullMoon ( 2026, 4, 4, &y, &m, &d ) == 1 && y == 2026 && m == 05 && d == 01);
+  assert ( nextFullMoon ( 2000, 5, 18, &y, &m, &d ) == 1 && y == 2000 && m == 6 && d == 17 );
 
 
-    assert( nextFullMoon ( 2026, 4, 4, &y, &m, &d ) == 1 && y == 2026 && m == 05 && d == 01);
-    assert ( prevFullMoon ( 2000, 1, 21, &y, &m, &d ) == 1  && y == 1999 && m == 12 && d == 22 );
+
+
+    assert ( prevFullMoon ( 2048, 2, 26, &y, &m, &d ) == 1 && y == 2048 && m == 1 && d == 30);
     assert ( prevFullMoon ( 2100, 10, 17, &y, &m, &d ) == 1 && y == 2100 && m == 9 && d == 18 );
+    assert ( prevFullMoon ( 2100, 12, 31, &y, &m, &d ) == 1 && y == 2100 && m == 12 && d == 16);
+    assert ( prevFullMoon ( 2000, 2, 18, &y, &m, &d ) == 1 && y == 2000 && m == 1 && d == 21);
+    assert ( prevFullMoon ( 2000, 1, 21, &y, &m, &d ) == 1  && y == 1999 && m == 12 && d == 22 );
+
     return 0;
 }
 #endif /* __PROGTEST__ */
