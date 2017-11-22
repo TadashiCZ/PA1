@@ -17,8 +17,8 @@ int is_leap (int y) {
     return  (y % 4 == 0 && (y % 100 != 0 || y % 400 == 0));
 }
 
-long int convertToEpochTime (int y, int m, int d) {
-    long int yday;
+long long int convertToEpochTime (int y, int m, int d) {
+    long long int yday = -1;
     if ( is_leap(y) ) {
         switch (m) {
             case 1:
@@ -56,6 +56,8 @@ long int convertToEpochTime (int y, int m, int d) {
                 break;
             case 12:
                 yday = 31 + 29 + 31 + 30 + 31 + 30 + 31 + 31 + 30 + 31 + 30 + d-1;
+                break;
+            default:
                 break;
 
         }
@@ -97,22 +99,28 @@ long int convertToEpochTime (int y, int m, int d) {
             case 12:
                 yday = 31 + 28 + 31 + 30 + 31 + 30 + 31 + 31 + 30 + 31 + 30 + d-1;
                 break;
+            default:
+                break;
         }
     }
-    return 0 + 0 * 60 + 0 * 3600 + yday * 86400 +
-           ((y-1900) - 70) * 31536000 + (((y-1900) - 69) / 4) * 86400 -
-           (((y-1900) - 1) / 100) * 86400 + (((y-1900) + 299) / 400) * 86400;
+    //printf ("yday: %ldd\n", yday);
+    if (yday == -1) return INVALID_DATE;
 
+    long long int epoch_time = (long long int)yday * 86400 +
+                               ((long long int)(y-1900) - 70) * 31536000 + (((long long int)(y-1900) - 69) / 4) * 86400 -
+                               (((long long int)(y-1900) - 1) / 100) * 86400 + (((long long int)(y-1900) + 299) / 400) * 86400;
+    //printf ("epoch_time: %lld\n", epoch_time);
+    return epoch_time;
 }
 
-long int ClearTimeFromEpochDateTime(long int SecondsSinceEpoch)
+long long int ClearTimeFromEpochDateTime(long long int SecondsSinceEpoch)
 {
     long  int sec;
     long  int quadricentennials, centennials, quadrennials, annuals;
     long  int year, leap;
-    long int yday;
+    long long int yday;
     long  int month, mday, wday;
-    static const  long int daysSinceJan1st[2][13]=
+    static const  long long int daysSinceJan1st[2][13]=
             {
                     {0,31,59,90,120,151,181,212,243,273,304,334,365}, // 365 days, non-leap
                     {0,31,60,91,121,152,182,213,244,274,305,335,366}  // 366 days, leap
@@ -188,20 +196,20 @@ long int ClearTimeFromEpochDateTime(long int SecondsSinceEpoch)
     pTm.tm_yday = (int)yday;        // [0,365] (day since January 1st AKA day of year)
     pTm.tm_isdst = -1;         // daylight saving time flag
 
-    long int time = convertToEpochTime(pTm.tm_year, pTm.tm_mon, pTm.tm_mday);
+    long long int time = convertToEpochTime(pTm.tm_year, pTm.tm_mon, pTm.tm_mday);
 
     return time;
 }
-    /* funkce přebraná a upravená z mého loňského kódu */
+/* funkce přebraná a upravená z mého loňského kódu */
 int checkDate ( int y, int m, int d){
-        // check input
+    // check input
     if( y < 2000) return 0;
     if( m < 1 || m > 12) return 0;
     if( d < 1 || d > 31) return 0;
 
-        // check days in February
+    // check days in February
     if( d>29 && m==2 ) return 0;
-        // check leap years
+    // check leap years
     if ( d==29 && m==2 ){
         if ( y%4000 == 0) return 0;
         else if ( y%400 == 0) return 1;
@@ -209,24 +217,24 @@ int checkDate ( int y, int m, int d){
         else if ( y%4 == 0 ) return 1;
         else { return 0;}
     }
-        // check day count for other months
+    // check day count for other months
     if (d==31 && !(m==1 || m==3 || m==5 || m==7 || m==8 || m==10 || m==12)) return 0;
 
     return 1;
 }
 
 
-    //using POSIX formula to convert to Epoch TimeStamp
+//using POSIX formula to convert to Epoch TimeStamp
 
 
 int isFullMoon ( int y, int m, int d )
 {
     if ( !checkDate(y,m,d) ) return INVALID_DATE;
 
-    long int nowDateTime = convertToEpochTime(y,m,d);
+    long long int nowDateTime = convertToEpochTime(y,m,d);
 
-    for (long int i = FIRST_FULLMOON ; i <= convertToEpochTime(y,m,d+1) ; i=i+ONE_FULLMOON ){
-        long int nowDate = nowDateTime;
+    for (long long int i = FIRST_FULLMOON ; i <= convertToEpochTime(y,m,d+1) ; i=i+ONE_FULLMOON ){
+        long long int nowDate = nowDateTime;
         if (nowDate == ClearTimeFromEpochDateTime(i)){
             return 1;
         }
@@ -237,14 +245,14 @@ int isFullMoon ( int y, int m, int d )
 
 
 // function created by Alexey Frunze and StackOverflow Community
-struct tm* SecondsSinceEpochToDateTime(struct tm* pTm, long int SecondsSinceEpoch)
+struct tm* SecondsSinceEpochToDateTime(struct tm* pTm, long long int SecondsSinceEpoch)
 {
-    long  int sec;
-    long  int quadricentennials, centennials, quadrennials, annuals;
-    long int year, leap;
-    long  int yday, hour, min;
-    long  int month, mday, wday;
-    static const long int daysSinceJan1st[2][13]=
+    long long int sec;
+    long long int quadricentennials, centennials, quadrennials, annuals;
+    long long int year, leap;
+    long long int yday, hour, min;
+    long long int month, mday, wday;
+    static const long long int daysSinceJan1st[2][13]=
             {
                     {0,31,59,90,120,151,181,212,243,273,304,334,365}, // 365 days, non-leap
                     {0,31,60,91,121,152,182,213,244,274,305,335,366}  // 366 days, leap
@@ -328,11 +336,10 @@ struct tm* SecondsSinceEpochToDateTime(struct tm* pTm, long int SecondsSinceEpoc
 
 
 
-int nextFullMoon ( int y, int m, int d,
-                   int * nextY, int * nextM, int * nextD )
+int nextFullMoon ( int y, int m, int d, int * nextY, int * nextM, int * nextD )
 {
     if ( !checkDate(y,m,d) ) return INVALID_DATE;
-    long int nowDateTime = convertToEpochTime(y,m,d);
+    long long int nowDateTime = convertToEpochTime(y,m,d);
     if (isFullMoon(y,m,d)) nowDateTime+=ONE_FULLMOON; /*{
         nowDateTime+=ONE_FULLMOON;
         struct tm pTm;
@@ -343,26 +350,27 @@ int nextFullMoon ( int y, int m, int d,
         printf ("Y: %d, M: %d, D: %d\n", *nextY, *nextM, *nextD);
         return 1;
     } */
-    for (long int i = FIRST_FULLMOON ; i <= TOO_MUCH ; i=i+ONE_FULLMOON ){
+    for (long long int i = FIRST_FULLMOON ; i <= TOO_MUCH ; i=i+ONE_FULLMOON ){
         if (i > nowDateTime) {
             struct tm pTm;
             SecondsSinceEpochToDateTime(&pTm, i);
             *nextM = pTm.tm_mon;
             *nextY = pTm.tm_year;
             *nextD = pTm.tm_mday;
-          //printf ("Y: %d, M: %d, D: %d\n", *nextY, *nextM, *nextD);
-          //  free(&pTm);
+            //printf ("Y: %d, M: %d, D: %d\n", *nextY, *nextM, *nextD);
+            //  free(&pTm);
             return 1;
         }
     }
     return 0;
 }
 
-int prevFullMoon ( int y, int m, int d,
-                   int * prevY, int * prevM, int * prevD )
+int prevFullMoon ( int y, int m, int d, int * prevY, int * prevM, int * prevD )
 {
     if ( !checkDate(y,m,d) ) return INVALID_DATE;
-    long int nowDateTime = labs(convertToEpochTime(y,m,d));
+
+    long long int nowDateTime = labs(convertToEpochTime(y,m,d));
+
     /*if (isFullMoon(y,m,d)){
         nowDateTime=nowDateTime-ONE_FULLMOON;
         struct tm pTm;
@@ -373,9 +381,8 @@ int prevFullMoon ( int y, int m, int d,
         //printf ("Y: %d, M: %d, D: %d\n", *prevY, *prevM, *prevD);
         return 1;
     }*/
-    for (long int i = LAST_FULLMOON ; i > FIRST_FULLMOON ; i=i-ONE_FULLMOON ){
-
-        //printf("i: %ld, nowDateTime: %ld\n", i, nowDateTime);
+    for (long long int i = LAST_FULLMOON ; i > FIRST_FULLMOON-2851443 ; i=i-ONE_FULLMOON ){
+        //printf("i: %lld, nowDateTime: %lld\n", i, nowDateTime);
         if (i < nowDateTime) {
             struct tm pTm;
             SecondsSinceEpochToDateTime(&pTm, i);
@@ -394,95 +401,93 @@ int prevFullMoon ( int y, int m, int d,
 
 #ifndef __PROGTEST__
 int main ( int argc, char * argv [] ){
-  int y, m, d;
+    int y, m, d;
 
-  assert ( isFullMoon ( 2000, 7, 16 ) == 1 );
-  assert ( isFullMoon ( 2017, 1, 11 ) == 0 );
-  assert ( isFullMoon ( 2017, 1, 12 ) == 1 );
-  assert ( isFullMoon ( 2017, 1, 13 ) == 0 );
-  assert ( isFullMoon ( 2017, 11, 3 ) == 0 );
-  assert ( isFullMoon ( 2017, 11, 4 ) == 1 );
-  assert ( isFullMoon ( 2017, 11, 5 ) == 0 );
-  assert ( isFullMoon ( 2019, 12, 11 ) == 1 );
-  assert ( isFullMoon ( 2019, 12, 12 ) == 0 );
-  assert ( isFullMoon ( 2019, 12, 13 ) == 0 );
-  assert ( isFullMoon ( 2017, 1, 12 ) == 1 );
-  assert ( prevFullMoon ( 2017, 1, 11, &y, &m, &d ) == 1 && y == 2016 && m == 12 && d == 14 );
-  assert ( prevFullMoon ( 2017, 1, 12, &y, &m, &d ) == 1 && y == 2016 && m == 12 && d == 14 );
-  assert ( prevFullMoon ( 2017, 1, 13, &y, &m, &d ) == 1 && y == 2017 && m == 1 && d == 12 );
-  assert ( prevFullMoon ( 2017, 11, 3, &y, &m, &d ) == 1 && y == 2017 && m == 10 && d == 5 );
-  assert ( prevFullMoon ( 2017, 11, 4, &y, &m, &d ) == 1 && y == 2017 && m == 10 && d == 5 );
-  assert ( prevFullMoon ( 2017, 11, 5, &y, &m, &d ) == 1 && y == 2017 && m == 11 && d == 4 );
-  assert ( prevFullMoon ( 2019, 12, 11, &y, &m, &d ) == 1 && y == 2019 && m == 11 && d == 12 );
-  assert ( prevFullMoon ( 2019, 12, 12, &y, &m, &d ) == 1 && y == 2019 && m == 12 && d == 11 );
-  assert ( prevFullMoon ( 2019, 12, 13, &y, &m, &d ) == 1 && y == 2019 && m == 12 && d == 11 );
-  assert ( nextFullMoon ( 2017, 1, 11, &y, &m, &d ) == 1 && y == 2017 && m == 1 && d == 12 );
-  assert ( nextFullMoon ( 2017, 1, 12, &y, &m, &d ) == 1 && y == 2017 && m == 2 && d == 11 );
-  assert ( nextFullMoon ( 2017, 1, 13, &y, &m, &d ) == 1 && y == 2017 && m == 2 && d == 11 );
-  assert ( nextFullMoon ( 2017, 11, 3, &y, &m, &d ) == 1 && y == 2017 && m == 11 && d == 4 );
-  assert ( nextFullMoon ( 2017, 11, 4, &y, &m, &d ) == 1 && y == 2017 && m == 12 && d == 3 );
-  assert ( nextFullMoon ( 2017, 11, 5, &y, &m, &d ) == 1 && y == 2017 && m == 12 && d == 3 );
-  assert ( nextFullMoon ( 2019, 12, 11, &y, &m, &d ) == 1 && y == 2020 && m == 1 && d == 10 );
-  assert ( nextFullMoon ( 2019, 12, 12, &y, &m, &d ) == 1 && y == 2020 && m == 1 && d == 10 );
-  assert ( nextFullMoon ( 2019, 12, 13, &y, &m, &d ) == 1 && y == 2020 && m == 1 && d == 10 );
-  assert ( isFullMoon ( 2017, 1, 12 ) == 1 );
-  assert ( isFullMoon ( 2017, 2, 11 ) == 1 );
-  assert ( isFullMoon ( 2017, 3, 12 ) == 1 );
-  assert ( isFullMoon ( 2017, 4, 11 ) == 1 );
-  assert ( isFullMoon ( 2017, 5, 10 ) == 1 );
-  assert ( isFullMoon ( 2017, 6, 9 ) == 1 );
-  assert ( isFullMoon ( 2017, 7, 9 ) == 1 );
-  assert ( isFullMoon ( 2017, 8, 7 ) == 1 );
-  assert ( isFullMoon ( 2017, 9, 6 ) == 1 );
-  assert ( isFullMoon ( 2017, 10, 5 ) == 1 );
-  assert ( isFullMoon ( 2017, 11, 4 ) == 1 );
-  assert ( isFullMoon ( 2017, 12, 3 ) == 1 );
-  assert ( isFullMoon ( 2018, 1, 2 ) == 1 );
-  assert ( isFullMoon ( 2018, 1, 31 ) == 1 );
-  assert ( isFullMoon ( 2018, 3, 2 ) == 1 );
-  assert ( isFullMoon ( 2018, 3, 31 ) == 1 );
-  assert ( isFullMoon ( 2018, 4, 30 ) == 1 );
-  assert ( isFullMoon ( 2018, 5, 29 ) == 1 );
-  assert ( isFullMoon ( 2018, 6, 28 ) == 1 );
-  assert ( isFullMoon ( 2018, 7, 27 ) == 1 );
-  assert ( isFullMoon ( 2018, 8, 26 ) == 1 );
-  assert ( isFullMoon ( 2018, 9, 25 ) == 0 );
-  assert ( isFullMoon ( 2018, 10, 24 ) == 1 );
-  assert ( isFullMoon ( 2018, 11, 23 ) == 1 );
-  assert ( isFullMoon ( 2018, 12, 22 ) == 1 );
-  assert ( isFullMoon ( 2019, 1, 21 ) == 1 );
-  assert ( isFullMoon ( 2019, 2, 19 ) == 1 );
-  assert ( isFullMoon ( 2019, 3, 21 ) == 1 );
-  assert ( isFullMoon ( 2019, 4, 19 ) == 1 );
-  assert ( isFullMoon ( 2019, 5, 18 ) == 0 );
-  assert ( isFullMoon ( 2019, 6, 17 ) == 1 );
-  assert ( isFullMoon ( 2019, 7, 16 ) == 0 );
-  assert ( isFullMoon ( 2019, 8, 15 ) == 1 );
-  assert ( isFullMoon ( 2019, 9, 14 ) == 1 );
-  assert ( isFullMoon ( 2019, 10, 13 ) == 1 );
-  assert ( isFullMoon ( 2019, 11, 12 ) == 1 );
-  assert ( isFullMoon ( 2019, 12, 12 ) == 0 );
-  assert ( isFullMoon ( 2000, 14, 10 ) == INVALID_DATE );
-  assert ( prevFullMoon ( 2000, 11, 31, &y, &m, &d ) == INVALID_DATE );
-  assert ( nextFullMoon ( 2001, 2, 29, &y, &m, &d ) == INVALID_DATE );
-  assert ( isFullMoon ( 2004, 2, 29 ) == 0 );
-  assert ( prevFullMoon ( 2100, 2, 29, &y, &m, &d ) == INVALID_DATE );
-  assert ( nextFullMoon ( 2000, 2, 29, &y, &m, &d ) == 1 && y == 2000 && m == 3 && d == 20 );
-  assert ( nextFullMoon ( 2026, 5, 26, &y, &m, &d ) == 1 && y == 2026 && m == 5 && d == 31 );
-  assert ( prevFullMoon ( 2037, 5, 21, &y, &m, &d ) == 1 && y == 2037 && m == 4 && d == 29 );
-  assert ( prevFullMoon (2025, 7, 10, &y, &m, &d ) == 1 && y == 2025 && m == 6 && d == 11);
-  assert ( nextFullMoon ( 2000, 5, 18, &y, &m, &d ) == 1 && y == 2000 && m == 6 && d == 17 );
-  assert( nextFullMoon ( 2026, 4, 4, &y, &m, &d ) == 1 && y == 2026 && m == 05 && d == 01);
-  assert ( nextFullMoon ( 2000, 5, 18, &y, &m, &d ) == 1 && y == 2000 && m == 6 && d == 17 );
-
-
-
+    assert ( isFullMoon ( 2000, 7, 16 ) == 1 );
+    assert ( isFullMoon ( 2017, 1, 11 ) == 0 );
+    assert ( isFullMoon ( 2017, 1, 12 ) == 1 );
+    assert ( isFullMoon ( 2017, 1, 13 ) == 0 );
+    assert ( isFullMoon ( 2017, 11, 3 ) == 0 );
+    assert ( isFullMoon ( 2017, 11, 4 ) == 1 );
+    assert ( isFullMoon ( 2017, 11, 5 ) == 0 );
+    assert ( isFullMoon ( 2019, 12, 11 ) == 1 );
+    assert ( isFullMoon ( 2019, 12, 12 ) == 0 );
+    assert ( isFullMoon ( 2019, 12, 13 ) == 0 );
+    assert ( isFullMoon ( 2017, 1, 12 ) == 1 );
+    assert ( prevFullMoon ( 2017, 1, 11, &y, &m, &d ) == 1 && y == 2016 && m == 12 && d == 14 );
+    assert ( prevFullMoon ( 2017, 1, 12, &y, &m, &d ) == 1 && y == 2016 && m == 12 && d == 14 );
+    assert ( prevFullMoon ( 2017, 1, 13, &y, &m, &d ) == 1 && y == 2017 && m == 1 && d == 12 );
+    assert ( prevFullMoon ( 2017, 11, 3, &y, &m, &d ) == 1 && y == 2017 && m == 10 && d == 5 );
+    assert ( prevFullMoon ( 2017, 11, 4, &y, &m, &d ) == 1 && y == 2017 && m == 10 && d == 5 );
+    assert ( prevFullMoon ( 2017, 11, 5, &y, &m, &d ) == 1 && y == 2017 && m == 11 && d == 4 );
+    assert ( prevFullMoon ( 2019, 12, 11, &y, &m, &d ) == 1 && y == 2019 && m == 11 && d == 12 );
+    assert ( prevFullMoon ( 2019, 12, 12, &y, &m, &d ) == 1 && y == 2019 && m == 12 && d == 11 );
+    assert ( prevFullMoon ( 2019, 12, 13, &y, &m, &d ) == 1 && y == 2019 && m == 12 && d == 11 );
+    assert ( nextFullMoon ( 2017, 1, 11, &y, &m, &d ) == 1 && y == 2017 && m == 1 && d == 12 );
+    assert ( nextFullMoon ( 2017, 1, 12, &y, &m, &d ) == 1 && y == 2017 && m == 2 && d == 11 );
+    assert ( nextFullMoon ( 2017, 1, 13, &y, &m, &d ) == 1 && y == 2017 && m == 2 && d == 11 );
+    assert ( nextFullMoon ( 2017, 11, 3, &y, &m, &d ) == 1 && y == 2017 && m == 11 && d == 4 );
+    assert ( nextFullMoon ( 2017, 11, 4, &y, &m, &d ) == 1 && y == 2017 && m == 12 && d == 3 );
+    assert ( nextFullMoon ( 2017, 11, 5, &y, &m, &d ) == 1 && y == 2017 && m == 12 && d == 3 );
+    assert ( nextFullMoon ( 2019, 12, 11, &y, &m, &d ) == 1 && y == 2020 && m == 1 && d == 10 );
+    assert ( nextFullMoon ( 2019, 12, 12, &y, &m, &d ) == 1 && y == 2020 && m == 1 && d == 10 );
+    assert ( nextFullMoon ( 2019, 12, 13, &y, &m, &d ) == 1 && y == 2020 && m == 1 && d == 10 );
+    assert ( isFullMoon ( 2017, 1, 12 ) == 1 );
+    assert ( isFullMoon ( 2017, 2, 11 ) == 1 );
+    assert ( isFullMoon ( 2017, 3, 12 ) == 1 );
+    assert ( isFullMoon ( 2017, 4, 11 ) == 1 );
+    assert ( isFullMoon ( 2017, 5, 10 ) == 1 );
+    assert ( isFullMoon ( 2017, 6, 9 ) == 1 );
+    assert ( isFullMoon ( 2017, 7, 9 ) == 1 );
+    assert ( isFullMoon ( 2017, 8, 7 ) == 1 );
+    assert ( isFullMoon ( 2017, 9, 6 ) == 1 );
+    assert ( isFullMoon ( 2017, 10, 5 ) == 1 );
+    assert ( isFullMoon ( 2017, 11, 4 ) == 1 );
+    assert ( isFullMoon ( 2017, 12, 3 ) == 1 );
+    assert ( isFullMoon ( 2018, 1, 2 ) == 1 );
+    assert ( isFullMoon ( 2018, 1, 31 ) == 1 );
+    assert ( isFullMoon ( 2018, 3, 2 ) == 1 );
+    assert ( isFullMoon ( 2018, 3, 31 ) == 1 );
+    assert ( isFullMoon ( 2018, 4, 30 ) == 1 );
+    assert ( isFullMoon ( 2018, 5, 29 ) == 1 );
+    assert ( isFullMoon ( 2018, 6, 28 ) == 1 );
+    assert ( isFullMoon ( 2018, 7, 27 ) == 1 );
+    assert ( isFullMoon ( 2018, 8, 26 ) == 1 );
+    assert ( isFullMoon ( 2018, 9, 25 ) == 0 );
+    assert ( isFullMoon ( 2018, 10, 24 ) == 1 );
+    assert ( isFullMoon ( 2018, 11, 23 ) == 1 );
+    assert ( isFullMoon ( 2018, 12, 22 ) == 1 );
+    assert ( isFullMoon ( 2019, 1, 21 ) == 1 );
+    assert ( isFullMoon ( 2019, 2, 19 ) == 1 );
+    assert ( isFullMoon ( 2019, 3, 21 ) == 1 );
+    assert ( isFullMoon ( 2019, 4, 19 ) == 1 );
+    assert ( isFullMoon ( 2019, 5, 18 ) == 0 );
+    assert ( isFullMoon ( 2019, 6, 17 ) == 1 );
+    assert ( isFullMoon ( 2019, 7, 16 ) == 0 );
+    assert ( isFullMoon ( 2019, 8, 15 ) == 1 );
+    assert ( isFullMoon ( 2019, 9, 14 ) == 1 );
+    assert ( isFullMoon ( 2019, 10, 13 ) == 1 );
+    assert ( isFullMoon ( 2019, 11, 12 ) == 1 );
+    assert ( isFullMoon ( 2019, 12, 12 ) == 0 );
+    assert ( isFullMoon ( 2000, 14, 10 ) == INVALID_DATE );
+    assert ( prevFullMoon ( 2000, 11, 31, &y, &m, &d ) == INVALID_DATE );
+    assert ( nextFullMoon ( 2001, 2, 29, &y, &m, &d ) == INVALID_DATE );
+    assert ( isFullMoon ( 2004, 2, 29 ) == 0 );
+    assert ( prevFullMoon ( 2100, 2, 29, &y, &m, &d ) == INVALID_DATE );
+    assert ( nextFullMoon ( 2000, 2, 29, &y, &m, &d ) == 1 && y == 2000 && m == 3 && d == 20 );
+    assert ( nextFullMoon ( 2026, 5, 26, &y, &m, &d ) == 1 && y == 2026 && m == 5 && d == 31 );
+    assert ( prevFullMoon ( 2037, 5, 21, &y, &m, &d ) == 1 && y == 2037 && m == 4 && d == 29 );
+    assert ( prevFullMoon (2025, 7, 10, &y, &m, &d ) == 1 && y == 2025 && m == 6 && d == 11);
+    assert ( nextFullMoon ( 2000, 5, 18, &y, &m, &d ) == 1 && y == 2000 && m == 6 && d == 17 );
+    assert( nextFullMoon ( 2026, 4, 4, &y, &m, &d ) == 1 && y == 2026 && m == 05 && d == 01);
+    assert ( nextFullMoon ( 2000, 5, 18, &y, &m, &d ) == 1 && y == 2000 && m == 6 && d == 17 );
+    assert ( prevFullMoon ( 2000, 1, 21, &y, &m, &d ) == 1  && y == 1999 && m == 12 && d == 22 );
+    assert ( prevFullMoon ( 2000, 2, 18, &y, &m, &d ) == 1 && y == 2000 && m == 1 && d == 21);
 
     assert ( prevFullMoon ( 2048, 2, 26, &y, &m, &d ) == 1 && y == 2048 && m == 1 && d == 30);
     assert ( prevFullMoon ( 2100, 10, 17, &y, &m, &d ) == 1 && y == 2100 && m == 9 && d == 18 );
     assert ( prevFullMoon ( 2100, 12, 31, &y, &m, &d ) == 1 && y == 2100 && m == 12 && d == 16);
-    assert ( prevFullMoon ( 2000, 2, 18, &y, &m, &d ) == 1 && y == 2000 && m == 1 && d == 21);
-    assert ( prevFullMoon ( 2000, 1, 21, &y, &m, &d ) == 1  && y == 1999 && m == 12 && d == 22 );
+
 
     return 0;
 }
