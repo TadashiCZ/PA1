@@ -2,3 +2,4 @@
 out/
 bin/
 */cmake-build-debug/
+*.out
