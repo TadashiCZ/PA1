@@ -36,7 +36,7 @@ char sign;
 int toBreak = 0;
 
     max = 20;
-    lanes = malloc(max * sizeof(long long int));
+    lanes = (long long int*) malloc(max * sizeof(long long int));
     printf("Pocty pruhu:\n");
     if ( scanf(" %c", &sign) != 1){
         printf("Nespravny vstup.\n");
@@ -60,7 +60,7 @@ int toBreak = 0;
 
         if ( n >= max ){
             max += ( max < 100 ) ? 10 : max / 2;
-            lanes = realloc(lanes, max * sizeof(long long int));
+            lanes = (long long int*) realloc(lanes, max * sizeof(long long int));
         }
 
         lanes[ n ] = input;
