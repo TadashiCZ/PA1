@@ -2,7 +2,7 @@
 #include <stdlib.h>
 
 long long int lcmCalculator(long long int n1, long long int n2){
-    long long int gcd=0, lcm, prod, tmp;
+    long long int gcd=0, lcm, tmp, n1copy, n2copy;
     if (n1 == 1 && n2 == 1){
         return 1;
     } else if (n1 == 1){
@@ -10,8 +10,8 @@ long long int lcmCalculator(long long int n1, long long int n2){
     } else if (n2 == 1){
         return n1;
     }
-
-    prod = n1*n2;
+    n1copy = n1;
+    n2copy = n2;
     if ( n1 < n2){
         tmp = n1;
         n1 = n2;
@@ -23,14 +23,7 @@ long long int lcmCalculator(long long int n1, long long int n2){
         n2 = tmp;
     }
     gcd = n1;
-    lcm = prod / gcd;
-
-    /*for(i=1; i <= n1 && i <= n2; ++i) {
-        // Checks if i is factor of both integers
-        if(n1%i==0 && n2%i==0)
-            gcd = i;
-    }
-    lcm = (n1/gcd)*n2;*/
+    lcm = (n1copy / gcd)*n2copy;
     return lcm;
 }
 
