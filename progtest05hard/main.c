@@ -2,7 +2,7 @@
 #include <stdlib.h>
 
 long long int lcmCalculator(long long int n1, long long int n2){
-    long long int i, gcd=0, lcm;
+    long long int gcd=0, lcm, prod, tmp;
     if (n1 == 1 && n2 == 1){
         return 1;
     } else if (n1 == 1){
@@ -10,12 +10,27 @@ long long int lcmCalculator(long long int n1, long long int n2){
     } else if (n2 == 1){
         return n1;
     }
-    for(i=1; i <= n1 && i <= n2; ++i) {
+
+    prod = n1*n2;
+    if ( n1 < n2){
+        tmp = n1;
+        n1 = n2;
+        n2 = tmp;
+    }
+    while (n2 > 0){
+        tmp = n1%n2;
+        n1 = n2;
+        n2 = tmp;
+    }
+    gcd = n1;
+    lcm = prod / gcd;
+
+    /*for(i=1; i <= n1 && i <= n2; ++i) {
         // Checks if i is factor of both integers
         if(n1%i==0 && n2%i==0)
             gcd = i;
     }
-    lcm = (n1/gcd)*n2;
+    lcm = (n1/gcd)*n2;*/
     return lcm;
 }
 
@@ -31,10 +46,12 @@ int checkIndex( long long int index1, long long int index2, long long int n){
             index1 < 0 ||
             index2 < 0 ||
             index1 > n ||
-            index2 > n){
+            index2 > n ||
+            index1 == index2){
             //printf("Selhaly indexy.\n");
         return 1;
     }
+
 
 
     return 0;
@@ -47,7 +64,7 @@ long long int* lanes = NULL;
 char sign;
 int toBreak = 0, res = 0;
 
-    max = 20;
+    max = 1000;
     lanes = (long long int*) malloc(max * sizeof(long long int));
     printf("Pocty pruhu:\n");
     if ( scanf(" %c", &sign) != 1){
@@ -74,10 +91,11 @@ int toBreak = 0, res = 0;
             return 1;
         }
 
-        if ( n >= max ){
-            max += ( max < 100 ) ? 10 : max / 2;
+        if ( n >= max-1 ){
+            max += ( max < 10000 ) ? 1000 : max / 2;
             lanes = (long long int*) realloc(lanes, max * sizeof(long long int));
         }
+
         if (checkInput(input) ){
             free(lanes);
             printf("Nespravny vstup.\n");
@@ -103,14 +121,14 @@ int toBreak = 0, res = 0;
         }
 
 
-        if (checkIndex(index1, index2, n) ){
+        if ( checkIndex(index1, index2, n) ){
             free(lanes);
             printf("Nespravny vstup.\n");
             return 1;
         }
         //printf("Indexy: 1: %lld, 2: %lld\n", index1, index2);
         if (index1 == index2){
-            printf("Vozidel: %lld\n", lanes [index1]);
+            printf("Vozidel: %lld\n", lanes[index1]);
             continue;
         }
         result = lanes[index1];
