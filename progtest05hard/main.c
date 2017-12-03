@@ -3,12 +3,19 @@
 
 long long int lcmCalculator(long long int n1, long long int n2){
     long long int i, gcd=0, lcm;
+    if (n1 == 1 && n2 == 1){
+        return 1;
+    } else if (n1 == 1){
+        return n2;
+    } else if (n2 == 1){
+        return n1;
+    }
     for(i=1; i <= n1 && i <= n2; ++i) {
         // Checks if i is factor of both integers
         if(n1%i==0 && n2%i==0)
             gcd = i;
     }
-    lcm = (n1*n2)/gcd;
+    lcm = (n1/gcd)*n2;
     return lcm;
 }
 
@@ -35,7 +42,7 @@ int checkIndex( long long int index1, long long int index2, long long int n){
 
 int main() {
 
-long long int max, input, n = 0, index1, index2, result = 0;
+long long int max, input, n = 0, index1, index2, result = 1;
 long long int* lanes = NULL;
 char sign;
 int toBreak = 0, res = 0;
@@ -44,15 +51,18 @@ int toBreak = 0, res = 0;
     lanes = (long long int*) malloc(max * sizeof(long long int));
     printf("Pocty pruhu:\n");
     if ( scanf(" %c", &sign) != 1){
+        free(lanes);
         printf("Nespravny vstup.\n");
         return 1;
     } else if (sign != '{') {
+        free(lanes);
         printf("Nespravny vstup.\n");
         return 1;
     }
 
     while ( sign != '}' ){
         if ( scanf ( " %lld %c ", &input, &sign) != 2 ){
+            free(lanes);
             printf("Nespravny vstup.\n");
             return 1;
         }
@@ -60,6 +70,7 @@ int toBreak = 0, res = 0;
             toBreak = 1;
         } else if(sign != ','){
             printf("Nespravny vstup.\n");
+            free(lanes);
             return 1;
         }
 
@@ -84,6 +95,7 @@ int toBreak = 0, res = 0;
     printf("Trasy:\n");
     while ( 1 ) {
         if ( (res = scanf ( " %lld %lld ", &index1, &index2)) != 2 && res!=EOF){
+            free(lanes);
             printf("Nespravny vstup.\n");
             return 1;
         } else if (res == EOF){
@@ -92,6 +104,7 @@ int toBreak = 0, res = 0;
 
 
         if (checkIndex(index1, index2, n) ){
+            free(lanes);
             printf("Nespravny vstup.\n");
             return 1;
         }
