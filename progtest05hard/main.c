@@ -2,7 +2,7 @@
 #include <stdlib.h>
 
 long long int lcmCalculator(long long int n1, long long int n2){
-    long long int i, gcd, lcm;
+    long long int i, gcd=0, lcm;
     for(i=1; i <= n1 && i <= n2; ++i) {
         // Checks if i is factor of both integers
         if(n1%i==0 && n2%i==0)
@@ -10,6 +10,11 @@ long long int lcmCalculator(long long int n1, long long int n2){
     }
     lcm = (n1*n2)/gcd;
     return lcm;
+}
+
+int checkInput (long long int input){
+    if (input <=0) return 1;
+    return 0;
 }
 
 
@@ -30,10 +35,10 @@ int checkIndex( long long int index1, long long int index2, long long int n){
 
 int main() {
 
-long long int max, input, n = 0, index1, index2, result;
+long long int max, input, n = 0, index1, index2, result = 0;
 long long int* lanes = NULL;
 char sign;
-int toBreak = 0;
+int toBreak = 0, res = 0;
 
     max = 20;
     lanes = (long long int*) malloc(max * sizeof(long long int));
@@ -62,18 +67,30 @@ int toBreak = 0;
             max += ( max < 100 ) ? 10 : max / 2;
             lanes = (long long int*) realloc(lanes, max * sizeof(long long int));
         }
-
-        lanes[ n ] = input;
-        n++;
-        //printf("%lld\n", n);
-
+        if (checkInput(input) ){
+            free(lanes);
+            printf("Nespravny vstup.\n");
+            return 1;
+        } else {
+            lanes[n] = input;
+            n++;
+            //printf("%lld\n", n);
+        }
         if (toBreak){
             break;
         }
     }
 
     printf("Trasy:\n");
-    while ( scanf ( " %lld %lld ", &index1, &index2) == 2 ) {
+    while ( 1 ) {
+        if ( (res = scanf ( " %lld %lld ", &index1, &index2)) != 2 && res!=EOF){
+            printf("Nespravny vstup.\n");
+            return 1;
+        } else if (res == EOF){
+            break;
+        }
+
+
         if (checkIndex(index1, index2, n) ){
             printf("Nespravny vstup.\n");
             return 1;
