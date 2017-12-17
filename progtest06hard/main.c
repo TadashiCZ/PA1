@@ -74,8 +74,9 @@ char* clearDelimiters(char* input){
 
 
 int main() {
-    long long int position=0, max = 100, questionPosition=0;
+    long long int position=0, max = 100, questionPosition=0, counter = 0;
     char* input = NULL;
+    char* ret = NULL;
     char* clearedInput = NULL;
   //  char* lookForThis = NULL;
     char* questionInput = NULL;
@@ -154,12 +155,22 @@ int main() {
         if (strlen(questionInput) == 0){
             printf("Neplatny dotaz\n");
         } else {
-        char* ret;
-        ret = strstr(clearedInput, questionInput);
+        ret = NULL;
+        ret = my_strstr(clearedInput, questionInput);
             if (ret == NULL){
                 printf("Nenalezeno\n");
             } else {
                 printf("%s\n", ret);
+            }
+        }
+        counter = 1;
+        for (int i = 0 ; clearedInput[i] != '\0' ; i++){
+            if (clearedInput[i] == '\n') {counter++;
+                //printf("Napočítal jsem %lld\n", counter);
+            }
+            if (&clearedInput[i] == ret) {
+                printf("Napočítal jsem %lld\n", counter);
+                break;
             }
         }
 
