@@ -3,31 +3,71 @@
 #include <memory.h>
 #include <ctype.h>
 
+
+
+int compare(char *X, char *Y)
+{
+    while (*X && *Y)
+    {
+        if (*X == *Y || (*X == ' ' && *Y == '\n')) {
+            X++;
+            Y++;
+        } else {
+            return 0;
+        }
+
+    }
+
+    return (*Y == '\0');
+}
+
+// Function to implement strstr() function
+char* my_strstr(char* X, char* Y)
+{
+    while (*X != '\0')
+    {
+        if ( (*X == *Y) && compare(X, Y) )
+            return X;
+        X++;
+    }
+
+    return NULL;
+}
+
+
 char* clearDelimiters(char* input){
-    char* output = (char*) malloc(strlen(input) * sizeof(char));
-    int counter = 0, j=0;
-    for (int i = 0 ;  ; i++){
+    char* output = (char*) malloc(strlen(input+1) * sizeof(char));
+    int counter = 0, j=0, i=0;
+    for (i = 0 ;  ; i++){
         if (input[i] == '\0'){
             output[counter] = '\0';
             break;
         }
        // printf("Odmazávám zbytečnosti.\n");
-            if (isalpha(input[i]) || input[i] == ' ' || input[i] == '\n'){
-                output[counter] = input[i];
-                printf("%c", output[counter]);
+            if (isalpha(input[i]) || input[i] == '\n'){
+                output[counter] = (char)tolower(input[i]);
+              // printf("%c", output[counter]);
+                counter++;
+            } else {
+                output[counter] = ' ';
+               // printf("%c", output[counter]);
                 counter++;
             }
     }
-    for (int i = 0 ; i < strlen(output) ; i++){
+
+    for (i=0 ; i < strlen(output) ; i++){
        // printf("Dávám pryč mezery.\n");
-        if (output[i] == ' '){
-            j = i+1;
-            while(output[j] == ' '){
-                output[j]=1;
+
+        if (output[i] == ' ') {
+            j = i + 1;
+            while (output[j] == ' ') {
+                output[j] = 1;
                 j++;
             }
         }
+       // printf("%c", output[i]);
     }
+
 
     return output;
 }
@@ -76,13 +116,15 @@ int main() {
 
     clearedInput = clearDelimiters(input);
     free(input);
-    printf("Výpis:\n%s\n------\n",clearedInput);
+    printf("Výpis:\n%s\n",clearedInput);
 
     printf("Hledani:\n");
 
-    max = 100;
-    questionInput = (char*) malloc(max * sizeof(char));
+
+
     while (1){
+        max = 100;
+        questionInput = (char*) malloc(max * sizeof(char));
         questionPosition = 0;
         firstSign = 1;
 
@@ -101,21 +143,35 @@ int main() {
             questionPosition++;
             firstSign = 0;
         }
-        if (firstSign != 1) questionInput = clearDelimiters(questionInput);
-        printf("Question input: %s\n", questionInput);
+
         if (charInput == EOF) {
             lastQuestion = 1;
             break;
+        }
+
+        if (firstSign != 1) questionInput = clearDelimiters(questionInput);
+        printf("Question input: %s\n", questionInput);
+        if (strlen(questionInput) == 0){
+            printf("Neplatny dotaz\n");
+        } else {
+        char* ret;
+        ret = strstr(clearedInput, questionInput);
+            if (ret == NULL){
+                printf("Nenalezeno\n");
+            } else {
+                printf("%s\n", ret);
+            }
         }
 
         if (lastQuestion){
             printf("Proběhl last question.\n");
             break;
         }
+        free(questionInput);
     }
 
 
-   // printf("%c", *strstr(input, "morbi"));
+
     free(clearedInput);
     free(questionInput);
     return 0;
