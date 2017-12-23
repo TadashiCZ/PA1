@@ -14,7 +14,9 @@ typedef struct TEmployee
 #endif /* __PROGTEST__ */
 
 void printEmployee (TEMPLOYEE * employee){
-    printf("Adresa: %p, Jméno: %s, Další: %p, Nadřízený: %p", (void*) employee, employee->m_Name, (void*)employee->m_Next, (void*)employee->m_Bak);
+    if (employee != NULL) {
+        printf("Adresa: %p, Jméno: %s, Další: %p, %s, Nadřízený: %p\n", (void*) employee, employee->m_Name, (void*)employee->m_Next, employee->m_Next->m_Name, (void*)employee->m_Bak);
+    } else {printf("NULL\n");}
 }
 
 TEMPLOYEE        * newEmployee  ( const char      * name,
@@ -42,9 +44,9 @@ TEMPLOYEE       * copyAfter     ( TEMPLOYEE        * position )
 TEMPLOYEE        * cloneList    ( TEMPLOYEE       * src )
 {
     TEMPLOYEE * originalHead = src;
-    TEMPLOYEE * newHead = src;
+    TEMPLOYEE * newHead = NULL;
     TEMPLOYEE * tmp = src;
-    TEMPLOYEE * tmp2 = src;
+    TEMPLOYEE * tmp2 = NULL;
 
     if (src == NULL) return NULL;
 
@@ -55,16 +57,29 @@ TEMPLOYEE        * cloneList    ( TEMPLOYEE       * src )
     newHead = originalHead->m_Next;
     tmp = originalHead;
     while (tmp != NULL) {
+       // printEmployee(tmp);
         if (tmp->m_Bak != NULL) tmp->m_Next->m_Bak = tmp->m_Bak->m_Next;
         tmp = tmp->m_Next->m_Next;
     }
 
     tmp = originalHead;
     tmp2 = newHead;
-
+    //printf("------\n");
     while (tmp != NULL) {
-        if (tmp2->m_Next != NULL) tmp2->m_Next = tmp2->m_Next->m_Next;
-        if (tmp->m_Next != NULL) tmp->m_Next = tmp->m_Next->m_Next;
+        //printEmployee(tmp);
+        //printEmployee(tmp2);
+
+        if (tmp->m_Next != NULL) {
+            tmp->m_Next = tmp->m_Next->m_Next;
+        } else {
+            tmp->m_Next = NULL;
+        }
+
+        if (tmp2->m_Next != NULL) {
+            tmp2->m_Next = tmp2->m_Next->m_Next;
+        } else {
+            tmp2->m_Next = NULL;
+        }
 
         tmp2 = tmp2->m_Next;
         tmp = tmp->m_Next;
@@ -78,17 +93,14 @@ void               freeList     ( TEMPLOYEE       * src )
     TEMPLOYEE * tmp;
     while ( src != NULL ) {
         tmp = src->m_Next;
-        free(src->m_Next);
         free(src->m_Name);
-        free(src->m_Bak);
         free(src);
         src = tmp;
     }
 }
 
 #ifndef __PROGTEST__
-int                main         ( int               argc,
-                                  char            * argv [] )
+int                main         ( )
 {
     TEMPLOYEE * a, *b;
     char tmp[100];
@@ -96,13 +108,13 @@ int                main         ( int               argc,
     assert ( sizeof ( TEMPLOYEE ) == 3 * sizeof ( void * ) );
     a = NULL;
     a = newEmployee ( "Peter", a );
-    printEmployee(a);
+   // printEmployee(a);
     a = newEmployee ( "John", a );
-    printEmployee(a);
+    //printEmployee(a);
     a = newEmployee ( "Joe", a );
-    printEmployee(a);
+    //printEmployee(a);
     a = newEmployee ( "Maria", a );
-    printEmployee(a);
+    //printEmployee(a);
 
     a -> m_Bak = a -> m_Next;
     a -> m_Next -> m_Next -> m_Bak = a -> m_Next -> m_Next -> m_Next;
@@ -122,12 +134,21 @@ int                main         ( int               argc,
     assert ( a -> m_Next -> m_Next -> m_Next -> m_Next == NULL );
     
     b = cloneList ( a );
+
     strncpy ( tmp, "Moe", sizeof ( tmp ) );
     a = newEmployee ( tmp, a );
     strncpy ( tmp, "Victoria", sizeof ( tmp ) );
     a = newEmployee ( tmp, a );
     strncpy ( tmp, "Peter", sizeof ( tmp ) );
     a = newEmployee ( tmp, a );
+
+
+
+    /*printEmployee(b);
+    printEmployee(b->m_Next);
+    printEmployee(b->m_Next->m_Next);
+    printEmployee(b->m_Next->m_Next->m_Next);*/
+
     b -> m_Next -> m_Next -> m_Next -> m_Bak = b -> m_Next -> m_Next;
     assert ( a
              && ! strcmp ( a -> m_Name, "Peter" )
