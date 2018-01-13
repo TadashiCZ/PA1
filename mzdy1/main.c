@@ -23,7 +23,7 @@ int main() {
         checked[i] = 0;
         pismenko++;
     }
-    printf("Vstup:\n");
+    //printf("Vstup:\n");
     if (scanf("%c", &pismenko) != 1) {
         printf("Nespravny vstup.\n");
         free(pole);
@@ -77,10 +77,10 @@ int main() {
         if (pismenko == '}') break;
     }
     fgets(inputString, 81, stdin);
-    if ( fgets(inputString, 81, stdin) == inputString){
-        printf("Nacitani se povedlo.\n");
-    } else {
-        printf("Nacitani selhalo.\n");
+    if ( fgets(inputString, 81, stdin) != inputString){
+        printf("Nespravny vstup.\n");
+            free(pole);
+            return 1;
     }
 
     if (ferror(stdin)){
@@ -88,7 +88,7 @@ int main() {
         free(pole);
         return 1;
     }
-    printf("%s", inputString);
+    //printf("%s", inputString);
     for (int j = 0 ; inputString[j] != '\0'; j++) {
         switch (inputString[j]) {
             case 'A': i = 0; break;
@@ -135,7 +135,7 @@ int main() {
             }
             result = (double)wageCount/(double)averageCount;
 
-            printf("Dělím %lf/%lf.\n", (double)wageCount, (double)averageCount);
+       //     printf("Dělím %lf/%lf.\n", (double)wageCount, (double)averageCount);
             printf("= %lf\n", result);
             averageCount = 0;
             wageCount = 0;
@@ -151,11 +151,11 @@ int main() {
     }
 
 
-    for (i = 0; i < 26; i++) {
+    /*for (i = 0; i < 26; i++) {
         printf("%c ", pole[i].code);
         printf("Wage: %ld, ", pole[i].wage);
         printf("Count: %d\n", pole[i].count);
-    }
+    }*/
 
     free(pole);
     return 0;
