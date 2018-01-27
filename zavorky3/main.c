@@ -1,55 +1,58 @@
 #include <stdio.h>
 #include <assert.h>
 
+unsigned long int catalanDP(unsigned int n) {
+    // Table to store results of subproblems
+    unsigned long int catalan[n + 1];
 
-long long int countAllBrackets(long long int firstOpen, long long int firstEnd,
-                               long long int secondOpen, long long int secondEnd) {
+    // Initialize first two values in table
+    catalan[0] = catalan[1] = 1;
 
-    long long int result = 0;
-    if (firstOpen == 0 && firstEnd == 0 && secondOpen == 0 && secondEnd == 0) {
-        return 1;
+    // Fill entries in catalan[] using recursive formula
+    for (int i = 2; i <= n; i++) {
+        catalan[i] = 0;
+        for (int j = 0; j < i; j++)
+            catalan[i] += catalan[j] * catalan[i - j - 1];
     }
+    // Return last entry
+    return catalan[n];
+}
 
-    if (firstOpen < 0 || secondOpen < 0 || firstEnd < 0 || secondOpen < 0) {
-        return 0;
+long long combi(int n, int k) {
+    long long ans = 1;
+    if (k > n - k)
+        k = n - k;
+    
+    int i = 1;
+    for (; i <= k; i++, n--) {
+        if (n % i == 0) {
+            ans *= n / i;
+        } else if (ans % i == 0) {
+            ans = ans / i * n;
+        } else {
+            ans = (ans * n) / i;
+        }
     }
-    printf("First open: %lld, first end: %lld, second open: %lld, second end: %lld\n",
-           firstOpen, firstEnd, secondOpen, secondEnd);
-
-    if (firstOpen > 0)
-        result =+ countAllBrackets(firstOpen - 1, firstEnd, secondOpen, secondEnd);
-
-    if (secondOpen > 0)
-        result =+ countAllBrackets(firstOpen, firstEnd, secondOpen - 1, secondEnd);
-
-    if (firstEnd > firstOpen && firstEnd > 0)
-        result =+ countAllBrackets(firstOpen, firstEnd - 1, secondOpen, secondEnd);
-
-    if (secondEnd > secondOpen && secondEnd > 0)
-        result =+ countAllBrackets(firstOpen, firstEnd, secondOpen, secondEnd - 1);
-
-    printf("Result: %lld\n", result);
-    return result;
+    return ans;
 }
 
 
 long long int countAll(int n, int m) {
-    if (n == 0 && m == 0) return 1;
-    if ((n == 1 && m == 0) || (n == 0 && m == 1)) return 1;
-
-    return countAllBrackets(n, n, m, m);
+    long long int result = (combi(2*n+2*m, n+m) * combi(n+m, n))  / (n+m+1);
+    printf("%lld\n", result);
+    return result;
 }
 
 int main() {
-    //assert(countAll(1, 0) == 1);
+    assert(countAll(0, 0) == 1);
     assert(countAll(1, 1) == 4);
-    /*assert(countAll(2, 1) == 15);
+    assert(countAll(2, 1) == 15);
     assert(countAll(4, 1) == 210);
     assert(countAll(1, 3) == 56);
     assert(countAll(2, 2) == 84);
     assert(countAll(0, 7) == 429);
     assert(countAll(1, 0) == 1);
-    assert(countAll(0, 0) == 1);*/
+    assert(countAll(0, 0) == 1);
 
 
     return 0;
