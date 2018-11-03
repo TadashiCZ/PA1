@@ -9,21 +9,24 @@ int readInterval(long long int &firstBack, long long int &lastBack, char &typeBa
     int base = -1;
 
     cin >> r;
-    if (r == 'r') {
+    if (cin.eof()) {
+        return 0;
+    } else if (r == 'r') {
         cin >> base >> doubledot >> left >> first >> semicolon >> last >> right >> type;
         if (left != '<' || doubledot != ':' || base < 2 || base > 36) {
+            cout << "Nespravny vstup." << endl;
             return 0;
         }
-    } else if (cin.eof()) {
-        return 2;
     } else if (r == '<') {
         cin >> first >> semicolon >> last >> right >> type;
     } else {
+        cout << "Nespravny vstup." << endl;
         return 0;
     }
 
     if (right != '>' || semicolon != ';' || (type != 'l' && type != 'z' && type != 's') ||
-        first < 0 || last < 0 || last < first || cin.fail()) {
+        first < 0 || last < 0 || last < first || !cin.good()) {
+        cout << "Nespravny vstup." << endl;
         return 0;
     }
 
@@ -104,22 +107,12 @@ long long int countZeroSeq(long long int first, long long int last, int base) {
 int main() {
 
     cout << "Zadejte intervaly:" << endl;
+    long long int first, last;
+    int base = 0;
+    char type;
 
-    while ( !cin.eof()) {
-        long long int first, last;
-        int base = 0;
-        char type;
-        int read;
 
-        read = readInterval(first, last, type, base);
-
-        if (read == 0) {
-            cout << "Nespravny vstup." << endl;
-            return 1;
-        } else if (read == 2){
-            return 0;
-        }
-
+    while (  readInterval(first, last, type, base) ) {
         //cout << "DEBUG: Base: " << base << ", First: " << first << ", Last: " << last << ", Type:  " << type << endl;
 
         if (type == 'l') {

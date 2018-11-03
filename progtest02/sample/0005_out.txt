@@ -1,0 +1,13 @@
+Zadejte intervaly:
+Nul: 168
+Cifer: 2742
+Nul: 179
+Nul: 74
+Nul: 87
+Cifer: 4756
+Nul: 478
+Sekvence: 3
+Sekvence: 2
+Cifer: 3861
+Nul: 161
+Sekvence: 1
