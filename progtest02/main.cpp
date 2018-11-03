@@ -3,7 +3,7 @@
 
 using namespace std;
 
-bool readInterval(long long int &firstBack, long long int &lastBack, char &typeBack, int &baseBack) {
+int readInterval(long long int &firstBack, long long int &lastBack, char &typeBack, int &baseBack) {
     char r, left, right, doubledot, semicolon, type;
     long long int first, last;
     int base = -1;
@@ -11,18 +11,20 @@ bool readInterval(long long int &firstBack, long long int &lastBack, char &typeB
     cin >> r;
     if (r == 'r') {
         cin >> base >> doubledot >> left >> first >> semicolon >> last >> right >> type;
-        if (doubledot != ':' || base < 2 || base > 36) {
-            return false;
+        if (left != '<' || doubledot != ':' || base < 2 || base > 36) {
+            return 0;
         }
+    } else if (cin.eof()) {
+        return 2;
     } else if (r == '<') {
         cin >> first >> semicolon >> last >> right >> type;
     } else {
-        return false;
+        return 0;
     }
 
     if (right != '>' || semicolon != ';' || (type != 'l' && type != 'z' && type != 's') ||
         first < 0 || last < 0 || last < first || cin.fail()) {
-        return false;
+        return 0;
     }
 
 
@@ -30,7 +32,7 @@ bool readInterval(long long int &firstBack, long long int &lastBack, char &typeB
     lastBack = last;
     typeBack = type;
     baseBack = (base == -1) ? 10 : base;
-    return true;
+    return 1;
 }
 
 long long int countDigits(long long int first, long long int last, int base) {
@@ -48,6 +50,23 @@ long long int countDigits(long long int first, long long int last, int base) {
     return result;
 }
 
+long long int zeroSeqCount(long long int x, int base) {
+    long long int result = 0, max = 0;
+    if (x == 0) return 1;
+    while ( x ) {
+        if (x % base == 0) {
+            //cout << result << "++" << endl;
+            result++;
+        } else {
+            //  cout << "result = 0" << endl;
+            if (result > max) max = result;
+            result = 0;
+        }
+        x /= base;
+    }
+    return max;
+}
+
 long long int zeroCount(long long int x, int base) {
     long long int result = 0;
     if (x == 0) return 1;
@@ -61,24 +80,44 @@ long long int zeroCount(long long int x, int base) {
 long long int countZeros(long long int first, long long int last, int base) {
     long long int result = 0;
     for ( long long int i = first; i <= last; ++i ) {
-      //  cout << i << ": " << result << " + " << zeroCount(i, base) << " = " << result + zeroCount(i, base) << endl;
+        //  cout << i << ": " << result << " + " << zeroCount(i, base) << " = " << result + zeroCount(i, base) << endl;
         result += zeroCount(i, base);
     }
 
     //cout << "RESULT: " << result << endl;
     return result;
+}
 
+long long int countZeroSeq(long long int first, long long int last, int base) {
+    long long int result = 0;
+    for ( long long int i = first; i <= last; ++i ) {
+        long long int seq = zeroSeqCount(i, base);
+        //  cout << i << ": " << result << " vs.  " << seq << endl;
+        if (seq > result) {
+            result = seq;
+        };
+    }
 
+    return result;
 }
 
 int main() {
+
+    cout << "Zadejte intervaly:" << endl;
+
     while ( !cin.eof()) {
         long long int first, last;
         int base = 0;
         char type;
-        if (!readInterval(first, last, type, base)) {
+        int read;
+
+        read = readInterval(first, last, type, base);
+
+        if (read == 0) {
             cout << "Nespravny vstup." << endl;
             return 1;
+        } else if (read == 2){
+            return 0;
         }
 
         //cout << "DEBUG: Base: " << base << ", First: " << first << ", Last: " << last << ", Type:  " << type << endl;
@@ -88,10 +127,12 @@ int main() {
         } else if (type == 'z') {
             cout << "Nul: " << countZeros(first, last, base) << endl;
         } else if (type == 's') {
-            //   cout << "Sekvence: " << countZeroSeq(first, last, base) << endl;
+            cout << "Sekvence: " << countZeroSeq(first, last, base) << endl;
         }
 
-
+        if (cin.eof()) {
+            return 0;
+        }
     }
 
     return 0;
