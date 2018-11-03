@@ -1,8 +1,9 @@
 #include <iostream>
+#include <cmath>
 
 using namespace std;
 
-bool readInterval(long long int &firstBack, long long int &lastBack, char & typeBack, int & baseBack) {
+bool readInterval(long long int &firstBack, long long int &lastBack, char &typeBack, int &baseBack) {
     char r, left, right, doubledot, semicolon, type;
     long long int first, last;
     int base = -1;
@@ -32,6 +33,22 @@ bool readInterval(long long int &firstBack, long long int &lastBack, char & type
     return true;
 }
 
+long long int countDigits(long long int first, long long int last, int base) {
+    long long int result = 0;
+    for ( long long int i = first; i <= last; ++i ) {
+        if (i == 0 || i == 1) {
+            result += 1;
+        } else {
+            // cout << i << ": " << result << " + " << ceil(log(i) / log(base)) << " = " << result + (long long int)((double)log(i) / log((double)base))+1 << endl;
+            result += (long long int) (log((double) i) / log((double) base)) + 1;
+        }
+    }
+
+    //cout << "RESULT: " << result << endl;
+    return result;
+}
+
+
 int main() {
     while ( !cin.eof()) {
         long long int first, last;
@@ -44,12 +61,12 @@ int main() {
 
         //cout << "DEBUG: Base: " << base << ", First: " << first << ", Last: " << last << ", Type:  " << type << endl;
 
-        if (type == 'l'){
-            cout << "Cifer: " << countCiphers(first, last, base) << endl;
-        } else if (type == 'z'){
-           cout << "Nul: " <countZeros(first, last, base) << endl;
-        } else if (type == 's'){
-            cout << "Sekvence: " <countZeroSeq(first, last, base) << endl;
+        if (type == 'l') {
+            cout << "Cifer: " << countDigits(first, last, base) << endl;
+        } else if (type == 'z') {
+            //   cout << "Nul: " << countZeros(first, last, base) << endl;
+        } else if (type == 's') {
+            //   cout << "Sekvence: " << countZeroSeq(first, last, base) << endl;
         }
 
 
