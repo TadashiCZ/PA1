@@ -48,6 +48,28 @@ long long int countDigits(long long int first, long long int last, int base) {
     return result;
 }
 
+long long int zeroCount(long long int x, int base) {
+    long long int result = 0;
+    if (x == 0) return 1;
+    while ( x ) {
+        if (x % base == 0) result++;
+        x /= base;
+    }
+    return result;
+}
+
+long long int countZeros(long long int first, long long int last, int base) {
+    long long int result = 0;
+    for ( long long int i = first; i <= last; ++i ) {
+      //  cout << i << ": " << result << " + " << zeroCount(i, base) << " = " << result + zeroCount(i, base) << endl;
+        result += zeroCount(i, base);
+    }
+
+    //cout << "RESULT: " << result << endl;
+    return result;
+
+
+}
 
 int main() {
     while ( !cin.eof()) {
@@ -64,7 +86,7 @@ int main() {
         if (type == 'l') {
             cout << "Cifer: " << countDigits(first, last, base) << endl;
         } else if (type == 'z') {
-            //   cout << "Nul: " << countZeros(first, last, base) << endl;
+            cout << "Nul: " << countZeros(first, last, base) << endl;
         } else if (type == 's') {
             //   cout << "Sekvence: " << countZeroSeq(first, last, base) << endl;
         }
