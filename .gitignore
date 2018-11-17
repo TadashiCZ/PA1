@@ -1,6 +1,5 @@
-*/.idea/
+.idea/
 out/
 bin/
-*/cmake-build-debug/
+cmake-build-debug/
 *.out
-zavorky3/zavorky
