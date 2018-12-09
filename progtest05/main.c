@@ -15,6 +15,30 @@ typedef struct highwayPrice {
     long long int mSize;
 } SHighway;
 
+
+int insertElement(SHighway ** highways, long long int from, long long int to, char letter, double price) {
+    int numberLetter = letter - 65; 
+    highways[numberLetter]->mArray[highways[numberLetter]->mCount].mPrice = price;
+    highways[numberLetter]->mArray[highways[numberLetter]->mCount].mFrom = from;
+    highways[numberLetter]->mArray[highways[numberLetter]->mCount].mTo = to;
+    highways[numberLetter]->mCount++;
+
+    for ( int i = 0; i < highways[numberLetter]->mCount; ++i ) {
+        if (highways[numberLetter]->mArray[i].mFrom >= from )
+    }
+
+    if (highways[numberLetter]->mCount >= highways[numberLetter]->mSize) {
+        highways[numberLetter]->mSize *= 2;
+        highways[numberLetter]->mArray = (SPart *) realloc(highways[numberLetter]->mArray,
+                                                           sizeof(SPart) * highways[numberLetter]->mSize);
+        if (!highways[numberLetter]->mArray) {
+            return 0;
+        }
+    }
+
+    return 1;
+}
+
 int loadInput(SHighway * highways[ALPHABET_SIZE]) {
 
     for ( int i = 0; i < ALPHABET_SIZE; ++i ) {
@@ -49,19 +73,9 @@ int loadInput(SHighway * highways[ALPHABET_SIZE]) {
         }
 
 
-        highways[letter - 65]->mArray[highways[letter - 65]->mCount].mPrice = price;
-        highways[letter - 65]->mArray[highways[letter - 65]->mCount].mFrom = from;
-        highways[letter - 65]->mArray[highways[letter - 65]->mCount].mTo = to;
-        highways[letter - 65]->mCount++;
-
-        if (highways[letter - 65]->mCount >= highways[letter - 65]->mSize) {
-            highways[letter - 65]->mSize *= 2;
-            highways[letter - 65]->mArray = (SPart *) realloc(highways[letter - 65]->mArray,
-                                                              sizeof(SPart) * highways[letter - 65]->mSize);
-            if (!highways[letter - 65]->mArray) {
-                printf("Out of memory!\n");
-                return 1;
-            }
+        if (!insertElement(highways, from, to, letter, price)) {
+            printf("Memory error.\n");
+            return 1;
         }
 
         if (c == ',') {
