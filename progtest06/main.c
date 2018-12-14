@@ -181,37 +181,38 @@ int tryNorth(SGrid * pGrid, const char * input, int inputSize, int startI, int s
 	int k = 0, found = 0;
 	//printGridInfo( pGrid );
 	while ( input[k] == pGrid->mGrid[i][j] ) {
-		printf( "input: %c, grid: %c, posX: %d, posY: %d\n", input[k], pGrid->mGrid[i][j], i, j );
+		//printf( "input: %c, grid: %c, posY: %d, posX: %d, k: %d, inputS: %d\n", input[k], pGrid->mGrid[i][j], i, j, k , inputSize-1);
 		k++;
-		i--;
-		if ( i < 0 ) {
+		if ( k >= inputSize-1 ) {
+			found = 1;
 			break;
 		}
-
-		if ( k-1 >= inputSize ) {
-			found = 1;
+		i--;
+		if ( i < 0 ) {
 			break;
 		}
 	}
 
 	if ( found ) {
-		for ( int l = 0 ; l < inputSize ; ++l ) {
-			pGrid->mStripGrid[startI][startJ] = 1;
-			i--;
+		for ( int l = k ; l > 0 ; --l ) {
+			pGrid->mStripGrid[i][j] = 1;
+			i++;
 		}
 		return 1;
 	}
+
 	return 0;
 }
 
 int searchForInput(SGrid * pGrid, char * input, int inputSize) {
 	int found = 0;
 
-	printf( "Searching for: %s\n", input );
+	printf( "Searching for: %s - ", input );
 
 	for ( int i = 0 ; i < pGrid->mCountY ; ++i ) {
 		for ( int j = 0 ; j < pGrid->mCountX ; ++j ) {
 			if ( tryNorth( pGrid, input, inputSize, i, j ) == 1 ) {
+				printf("Found\n");
 				found = 1;
 			}
 			// todo tryNorthWest
@@ -228,7 +229,7 @@ int searchForInput(SGrid * pGrid, char * input, int inputSize) {
 		return 0;
 	}
 
-
+	//printGridInfo(pGrid);
 	return 1;
 }
 
@@ -281,13 +282,7 @@ int main() {
 		return 1;
 	}
 
-	while ( readQuery( grid ) ) {
-
-	}
-
-	// todo readQueries
-
-
+	while ( readQuery( grid ) ) {}
 
 	deleteGrid( grid );
 
