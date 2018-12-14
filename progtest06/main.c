@@ -50,6 +50,7 @@ int loadFirstLine(SGrid * grid) {
 
 	grid->mSizeX = grid->mCountX;
 	grid->mGrid[grid->mCountY] = ( char * ) realloc( grid->mGrid[grid->mCountY], grid->mSizeX * sizeof( char ) );
+	grid->mCountY++;
 	return grid->mCountX;
 }
 
@@ -60,15 +61,18 @@ int loadLine(SGrid * grid) {
 	grid->mGrid[grid->mCountY] = ( char * ) malloc( grid->mCountX * sizeof( char ) );
 	while ( 1 ) {
 		if ( scanf( "%c", &c ) == EOF ) {
+			free( grid->mGrid[grid->mCountY] );
 			return -1;
 		}
 
 		if ( c != '\n' && c != 46 && ( c > 122 || c < 97 ) ) {
+			free( grid->mGrid[grid->mCountY] );
 			return -1;
 		}
 
 		if ( c == '\n' ) {
 			if ( !first ) break;
+			free( grid->mGrid[grid->mCountY] );
 			return 1;
 		}
 
@@ -79,7 +83,7 @@ int loadLine(SGrid * grid) {
 			return -1;
 		}
 
-		if ( counter >= grid->mSizeX ) {
+		if ( counter > grid->mSizeX ) {
 			grid->mSizeX *= 2;
 			grid->mGrid[grid->mCountY] = ( char * ) realloc( grid->mGrid[grid->mCountY], grid->mSizeX * sizeof( char ) );
 		}
@@ -89,6 +93,7 @@ int loadLine(SGrid * grid) {
 		return -1;
 	}
 
+	grid->mCountY++;
 	return 0;
 }
 
@@ -102,14 +107,13 @@ int loadMap(SGrid * grid) {
 
 
 	int lineSize = loadFirstLine( grid );
-	grid->mCountY++;
+
 	if ( lineSize == -1 ) {
 		return 1;
 	}
 
 	while ( 1 ) {
 		int ret = loadLine( grid );
-		grid->mCountY++;
 		if ( ret == -1 ) {
 			return 1;
 		} else if ( ret == 1 ) {
@@ -121,6 +125,10 @@ int loadMap(SGrid * grid) {
 			grid->mGrid = ( char ** ) realloc( grid->mGrid, grid->mSizeY * sizeof( char * ) );
 		}
 	}
+
+
+	grid->mSizeY = grid->mCountY;
+	grid->mGrid = ( char ** ) realloc( grid->mGrid, grid->mSizeY * sizeof( char * ) );
 
 	grid->mStripGrid = ( int ** ) malloc( grid->mCountY * sizeof( int * ) );
 	for ( int i = 0 ; i < grid->mCountY ; ++i ) {
@@ -143,23 +151,50 @@ void printSelection(SGrid * pGrid) {
 	printf( "\n" );
 }
 
-int tryNorth(SGrid * pGrid, char * input, int inputSize, int startI, int startJ){
+void printGridInfo(SGrid * grid) {
+	printf( "Grid:\n" );
+	printf( "SizeY: %d, SizeX: %d, CountY: %d, CountX: %d, hasStrip: %d\n", grid->mSizeY, grid->mSizeX, grid->mCountY,
+	        grid->mCountX, grid->mHasStrip );
+
+	for ( int i = 0 ; i < grid->mCountY ; ++i ) {
+		for ( int j = 0 ; j < grid->mCountX ; ++j ) {
+			printf( "%c", grid->mGrid[i][j] );
+		}
+		printf( "\n" );
+	}
+	if ( grid->mHasStrip ) {
+		printf( "\n" );
+		for ( int i = 0 ; i < grid->mCountY ; ++i ) {
+			for ( int j = 0 ; j < grid->mCountX ; ++j ) {
+				printf( "%d", grid->mStripGrid[i][j] );
+			}
+			printf( "\n" );
+		}
+	}
+	printf( "\n\n" );
+
+
+}
+
+int tryNorth(SGrid * pGrid, const char * input, int inputSize, int startI, int startJ) {
 	int i = startI, j = startJ;
 	int k = 0, found = 0;
-
-	while (input[k] == pGrid->mGrid[i][j]){
+	//printGridInfo( pGrid );
+	while ( input[k] == pGrid->mGrid[i][j] ) {
+		printf( "input: %c, grid: %c, posX: %d, posY: %d\n", input[k], pGrid->mGrid[i][j], i, j );
 		k++;
 		i--;
-		if (i < 0){
+		if ( i < 0 ) {
 			break;
 		}
-		if (k >= inputSize){
+
+		if ( k-1 >= inputSize ) {
 			found = 1;
 			break;
 		}
 	}
 
-	if (found){
+	if ( found ) {
 		for ( int l = 0 ; l < inputSize ; ++l ) {
 			pGrid->mStripGrid[startI][startJ] = 1;
 			i--;
@@ -169,12 +204,14 @@ int tryNorth(SGrid * pGrid, char * input, int inputSize, int startI, int startJ)
 	return 0;
 }
 
-
 int searchForInput(SGrid * pGrid, char * input, int inputSize) {
 	int found = 0;
+
+	printf( "Searching for: %s\n", input );
+
 	for ( int i = 0 ; i < pGrid->mCountY ; ++i ) {
 		for ( int j = 0 ; j < pGrid->mCountX ; ++j ) {
-			if (tryNorth(pGrid, input, inputSize, i, j) == 1){
+			if ( tryNorth( pGrid, input, inputSize, i, j ) == 1 ) {
 				found = 1;
 			}
 			// todo tryNorthWest
@@ -187,7 +224,7 @@ int searchForInput(SGrid * pGrid, char * input, int inputSize) {
 		}
 	}
 
-	if (found == 0){
+	if ( found == 0 ) {
 		return 0;
 	}
 
