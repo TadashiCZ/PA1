@@ -30,7 +30,9 @@ int loadFirstLine(SGrid * grid) {
 	printf( "Zadejte osmismerku:\n" );
 	char c;
 	while ( 1 ) {
-		scanf( "%c", &c );
+		if ( scanf( "%c", &c ) == EOF ) {
+			return 1;
+		}
 		if ( c != '\n' && c != '.' && ( c > 122 || c < 97 ) ) {
 			return -1;
 		}
@@ -57,7 +59,10 @@ int loadLine(SGrid * grid) {
 	int first = 1;
 	grid->mGrid[grid->mCountY] = ( char * ) malloc( grid->mCountX * sizeof( char ) );
 	while ( 1 ) {
-		scanf( "%c", &c );
+		if ( scanf( "%c", &c ) == EOF ) {
+			return -1;
+		}
+
 		if ( c != '\n' && c != 46 && ( c > 122 || c < 97 ) ) {
 			return -1;
 		}
@@ -126,14 +131,77 @@ int loadMap(SGrid * grid) {
 	return 0;
 }
 
+void printSelection(SGrid * pGrid) {
+	printf( "Vysledek:\n" );
+	for ( int i = 0 ; i < pGrid->mCountY ; ++i ) {
+		for ( int j = 0 ; j < pGrid->mCountX ; ++j ) {
+			if ( pGrid->mStripGrid[i][j] == 0 ) {
+				printf( "%c", pGrid->mGrid[i][j] );
+			}
+		}
+	}
+	printf( "\n" );
+}
+
+int tryNorth(SGrid * pGrid, char * input, int inputSize, int startI, int startJ){
+	int i = startI, j = startJ;
+	int k = 0, found = 0;
+
+	while (input[k] == pGrid->mGrid[i][j]){
+		k++;
+		i--;
+		if (i < 0){
+			break;
+		}
+		if (k >= inputSize){
+			found = 1;
+			break;
+		}
+	}
+
+	if (found){
+		for ( int l = 0 ; l < inputSize ; ++l ) {
+			pGrid->mStripGrid[startI][startJ] = 1;
+			i--;
+		}
+		return 1;
+	}
+	return 0;
+}
+
+
+int searchForInput(SGrid * pGrid, char * input, int inputSize) {
+	int found = 0;
+	for ( int i = 0 ; i < pGrid->mCountY ; ++i ) {
+		for ( int j = 0 ; j < pGrid->mCountX ; ++j ) {
+			if (tryNorth(pGrid, input, inputSize, i, j) == 1){
+				found = 1;
+			}
+			// todo tryNorthWest
+			// todo tryWest
+			// todo trySouthWest
+			// todo trySouth
+			// todo trySouthEast
+			// todo tryEast
+			// todo tryNorthEast
+		}
+	}
+
+	if (found == 0){
+		return 0;
+	}
+
+
+	return 1;
+}
+
 int readQuery(SGrid * grid) {
-	char * input, c;
+	char * input, c = '.';
 	int inputSize = 20, inputCount = 0, lastInput = 0;
 	input = ( char * ) malloc( inputSize * sizeof( char ) );
 
 	while ( 1 ) {
-		scanf( "%c", &c );
-		if ( c == EOF ) {
+		if ( scanf( "%c", &c ) == EOF ) {
 			input[inputCount++] = '\0';
 			lastInput = 1;
 			break;
@@ -146,17 +214,24 @@ int readQuery(SGrid * grid) {
 		input[inputCount++] = c;
 		if ( inputCount >= inputSize ) {
 			inputSize *= 2;
-			input = (char*) realloc( input, inputSize * sizeof( char ) );
+			input = ( char * ) realloc( input, inputSize * sizeof( char ) );
 		}
 	}
 
-	if ( lastInput ) {
-		// todo lastInput
-	} else {
-		// todo readNextQuery
+	if ( !searchForInput( grid, input, inputCount ) ) {
+		printf( "Slovo \"%s\" nenalezeno.\n", input );
+		free( input );
+		return 0;
 	}
 
-	// todo dont forget free input
+	if ( lastInput ) {
+		printSelection( grid );
+		free( input );
+		return 0;
+	} else {
+		free( input );
+		return 1;
+	}
 	return 1;
 }
 
