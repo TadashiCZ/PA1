@@ -81,7 +81,152 @@ TCAR * copyCarAfter(TCAR * position) {
 }
 
 TOFFICE * cloneOffice(TOFFICE * office) {
-	/* todo */
+	if ( office == NULL ) return NULL;
+
+	TEMPLOYEE * origEmpHead = office->m_Emp;
+	TEMPLOYEE * newEmpHead = NULL;
+	TCAR * origCarHead = office->m_Car;
+	TCAR * newCarHead = NULL;
+	TEMPLOYEE * tmpEmp = office->m_Emp;
+	TEMPLOYEE * tmpEmp2 = NULL;
+	TCAR * tmpCar = office->m_Car;
+	TCAR * tmpCar2 = NULL;
+
+	if ( office->m_Car == NULL && office->m_Emp == NULL ) {
+		TOFFICE * newOffice = ( TOFFICE * ) malloc( sizeof( TOFFICE ) );
+		newOffice->m_Emp = NULL;
+		newOffice->m_Car = NULL;
+		return newOffice;
+	}
+
+	if (office->m_Emp != NULL && office->m_Car == NULL){
+		while ( tmpEmp != NULL ) {
+			copyEmpAfter( tmpEmp );
+			tmpEmp = tmpEmp->m_Next->m_Next;
+		}
+		newEmpHead = origEmpHead->m_Next;
+		tmpEmp = origEmpHead;
+		tmpEmp2 = newEmpHead;
+
+		while ( tmpEmp != NULL ) {
+			if ( tmpEmp->m_Next != NULL ) {
+				tmpEmp->m_Next = tmpEmp->m_Next->m_Next;
+			} else {
+				tmpEmp->m_Next = NULL;
+			}
+
+			if ( tmpEmp2->m_Next != NULL ) {
+				tmpEmp2->m_Next = tmpEmp2->m_Next->m_Next;
+			} else {
+				tmpEmp2->m_Next = NULL;
+			}
+
+			tmpEmp2 = tmpEmp2->m_Next;
+			tmpEmp = tmpEmp->m_Next;
+		}
+
+		TOFFICE * newOffice = ( TOFFICE * ) malloc( sizeof( TOFFICE ) );
+		newOffice->m_Car = NULL;
+		newOffice->m_Emp = newEmpHead;
+		return newOffice;
+	}
+
+	if (office->m_Emp == NULL && office->m_Car != NULL){
+		while ( tmpCar != NULL ) {
+			copyCarAfter( tmpCar );
+			tmpCar = tmpCar->m_Next->m_Next;
+		}
+
+		newCarHead = origCarHead->m_Next;
+		tmpCar = origCarHead;
+		tmpCar2 = newCarHead;
+
+		while ( tmpCar != NULL ) {
+			if ( tmpCar->m_Next != NULL ) {
+				tmpCar->m_Next = tmpCar->m_Next->m_Next;
+			} else {
+				tmpCar->m_Next = NULL;
+			}
+
+			if ( tmpCar2->m_Next != NULL ) {
+				tmpCar2->m_Next = tmpCar2->m_Next->m_Next;
+			} else {
+				tmpCar2->m_Next = NULL;
+			}
+
+			tmpCar2 = tmpCar2->m_Next;
+			tmpCar = tmpCar->m_Next;
+		}
+
+		TOFFICE * newOffice = ( TOFFICE * ) malloc( sizeof( TOFFICE ) );
+		newOffice->m_Car = newCarHead;
+		newOffice->m_Emp = NULL;
+		return newOffice;
+	}
+
+	while ( tmpEmp != NULL ) {
+		copyEmpAfter( tmpEmp );
+		tmpEmp = tmpEmp->m_Next->m_Next;
+	}
+
+	while ( tmpCar != NULL ) {
+		copyCarAfter( tmpCar );
+		tmpCar = tmpCar->m_Next->m_Next;
+	}
+
+	newEmpHead = origEmpHead->m_Next;
+	tmpEmp = origEmpHead;
+
+	while ( tmpEmp != NULL ) {
+		if ( tmpEmp->m_Car != NULL ) tmpEmp->m_Next->m_Car = tmpEmp->m_Car->m_Next;
+		tmpEmp = tmpEmp->m_Next->m_Next;
+	}
+
+	tmpEmp = origEmpHead;
+	tmpEmp2 = newEmpHead;
+
+	while ( tmpEmp != NULL ) {
+		if ( tmpEmp->m_Next != NULL ) {
+			tmpEmp->m_Next = tmpEmp->m_Next->m_Next;
+		} else {
+			tmpEmp->m_Next = NULL;
+		}
+
+		if ( tmpEmp2->m_Next != NULL ) {
+			tmpEmp2->m_Next = tmpEmp2->m_Next->m_Next;
+		} else {
+			tmpEmp2->m_Next = NULL;
+		}
+
+		tmpEmp2 = tmpEmp2->m_Next;
+		tmpEmp = tmpEmp->m_Next;
+	}
+
+	newCarHead = origCarHead->m_Next;
+	tmpCar = origCarHead;
+	tmpCar2 = newCarHead;
+
+	while ( tmpCar != NULL ) {
+		if ( tmpCar->m_Next != NULL ) {
+			tmpCar->m_Next = tmpCar->m_Next->m_Next;
+		} else {
+			tmpCar->m_Next = NULL;
+		}
+
+		if ( tmpCar2->m_Next != NULL ) {
+			tmpCar2->m_Next = tmpCar2->m_Next->m_Next;
+		} else {
+			tmpCar2->m_Next = NULL;
+		}
+
+		tmpCar2 = tmpCar2->m_Next;
+		tmpCar = tmpCar->m_Next;
+	}
+
+	TOFFICE * newOffice = ( TOFFICE * ) malloc( sizeof( TOFFICE ) );
+	newOffice->m_Car = newCarHead;
+	newOffice->m_Emp = newEmpHead;
+	return newOffice;
 }
 
 void freeOffice(TOFFICE * office) {
@@ -199,7 +344,7 @@ int main(int argc, char * argv[]) {
 	assert ( b->m_Car->m_Next
 	         && !strcmp( b->m_Car->m_Next->m_Model, "Skoda Octavia" ) );
 	assert ( b->m_Car->m_Next->m_Next == NULL );
-	* /
+
 	freeOffice( a );
 	freeOffice( b );
 	return 0;
