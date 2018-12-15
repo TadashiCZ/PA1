@@ -77,7 +77,6 @@ int loadLine(SGrid * grid) {
 			return 1;
 		}
 
-		grid->mGrid[grid->mCountY][counter] = c;
 		counter++;
 		first = 0;
 		if ( counter > grid->mCountX ) {
