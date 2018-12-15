@@ -72,7 +72,7 @@ int loadLine(SGrid * grid) {
 		}
 
 		if ( c == '\n' ) {
-			if ( !first ) {break;}
+			if ( !first ) { break; }
 			free( grid->mGrid[grid->mCountY] );
 			return 1;
 		}
@@ -146,14 +146,23 @@ int loadMap(SGrid * grid) {
 
 void printSelection(SGrid * pGrid) {
 	printf( "Vysledek:\n" );
+	int cnt = 0, output = 0;
 	for ( int i = 0 ; i < pGrid->mCountY ; ++i ) {
 		for ( int j = 0 ; j < pGrid->mCountX ; ++j ) {
-			if ( pGrid->mStripGrid[i][j] == 0 ) {
+			if ( pGrid->mStripGrid[i][j] == 0 && pGrid->mGrid[i][j] != '.' ) {
+				if ( cnt >= 60 ) {
+					printf( "\n" );
+					cnt = 0;
+				}
 				printf( "%c", pGrid->mGrid[i][j] );
+				output = 1;
+				cnt++;
 			}
 		}
 	}
-	printf( "\n" );
+	if ( output ) {
+		printf( "\n" );
+	}
 }
 
 void printGridInfo(SGrid * grid) {
@@ -473,8 +482,14 @@ int readQuery(SGrid * grid) {
 		}
 	}
 
+	if ( inputCount == 1 ) {
+		printSelection( grid );
+		free( input );
+		return 0;
+	}
+
 	if ( !searchForInput( grid, input, inputCount ) ) {
-		printf( "Slovo \"%s\" nenalezeno.\n", input );
+		printf( "Slovo \'%s\' nenalezeno.\n", input );
 		free( input );
 		return 0;
 	}
