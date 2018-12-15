@@ -34,6 +34,7 @@ int loadFirstLine(SGrid * grid) {
 			return 1;
 		}
 		if ( c != '\n' && c != '.' && ( c > 122 || c < 97 ) ) {
+			grid->mCountY++;
 			return -1;
 		}
 
@@ -65,13 +66,13 @@ int loadLine(SGrid * grid) {
 			return -1;
 		}
 
-		if ( c != '\n' && c != 46 && ( c > 122 || c < 97 ) ) {
+		if ( c != '\n' && c != '.' && ( c > 122 || c < 97 ) ) {
 			free( grid->mGrid[grid->mCountY] );
 			return -1;
 		}
 
 		if ( c == '\n' ) {
-			if ( !first ) break;
+			if ( !first ) {break;}
 			free( grid->mGrid[grid->mCountY] );
 			return 1;
 		}
@@ -90,6 +91,7 @@ int loadLine(SGrid * grid) {
 	}
 
 	if ( counter != grid->mCountX ) {
+		free( grid->mGrid[grid->mCountY] );
 		return -1;
 	}
 
@@ -133,6 +135,9 @@ int loadMap(SGrid * grid) {
 	grid->mStripGrid = ( int ** ) malloc( grid->mCountY * sizeof( int * ) );
 	for ( int i = 0 ; i < grid->mCountY ; ++i ) {
 		grid->mStripGrid[i] = ( int * ) malloc( grid->mCountX * sizeof( int ) );
+		for ( int j = 0 ; j < grid->mCountX ; ++j ) {
+			grid->mStripGrid[i][j] = 0;
+		}
 	}
 	grid->mHasStrip = 1;
 
@@ -179,16 +184,14 @@ void printGridInfo(SGrid * grid) {
 int tryNorth(SGrid * pGrid, const char * input, int inputSize, int startI, int startJ) {
 	int i = startI, j = startJ;
 	int k = 0, found = 0;
-	//printGridInfo( pGrid );
 	while ( input[k] == pGrid->mGrid[i][j] ) {
-		//printf( "input: %c, grid: %c, posY: %d, posX: %d, k: %d, inputS: %d\n", input[k], pGrid->mGrid[i][j], i, j, k , inputSize-1);
 		k++;
-		if ( k >= inputSize-1 ) {
+		if ( k >= inputSize - 1 ) {
 			found = 1;
 			break;
 		}
 		i--;
-		if ( i < 0 ) {
+		if ( j < 0 || i >= pGrid->mCountY || j >= pGrid->mCountX || i < 0 ) {
 			break;
 		}
 	}
@@ -204,24 +207,238 @@ int tryNorth(SGrid * pGrid, const char * input, int inputSize, int startI, int s
 	return 0;
 }
 
+int tryNorthWest(SGrid * pGrid, const char * input, int inputSize, int startI, int startJ) {
+	int i = startI, j = startJ;
+	int k = 0, found = 0;
+	while ( input[k] == pGrid->mGrid[i][j] ) {
+		k++;
+		if ( k >= inputSize - 1 ) {
+			found = 1;
+			break;
+		}
+		i--;
+		j--;
+		if ( j < 0 || i >= pGrid->mCountY || j >= pGrid->mCountX || i < 0 ) {
+			break;
+		}
+	}
+
+	if ( found ) {
+		for ( int l = k ; l > 0 ; --l ) {
+			pGrid->mStripGrid[i][j] = 1;
+			i++;
+			j++;
+		}
+		return 1;
+	}
+
+	return 0;
+}
+
+int tryWest(SGrid * pGrid, const char * input, int inputSize, int startI, int startJ) {
+	int i = startI, j = startJ;
+	int k = 0, found = 0;
+	while ( input[k] == pGrid->mGrid[i][j] ) {
+		k++;
+		if ( k >= inputSize - 1 ) {
+			found = 1;
+			break;
+		}
+		j--;
+		if ( j < 0 || i >= pGrid->mCountY || j >= pGrid->mCountX || i < 0 ) {
+			break;
+		}
+	}
+
+	if ( found ) {
+		for ( int l = k ; l > 0 ; --l ) {
+			pGrid->mStripGrid[i][j] = 1;
+			j++;
+		}
+		return 1;
+	}
+
+	return 0;
+}
+
+int trySouthWest(SGrid * pGrid, const char * input, int inputSize, int startI, int startJ) {
+	int i = startI, j = startJ;
+	int k = 0, found = 0;
+	while ( input[k] == pGrid->mGrid[i][j] ) {
+		k++;
+		if ( k >= inputSize - 1 ) {
+			found = 1;
+			break;
+		}
+		i++;
+		j--;
+		if ( j < 0 || i >= pGrid->mCountY || j >= pGrid->mCountX || i < 0 ) {
+			break;
+		}
+	}
+
+	if ( found ) {
+		for ( int l = k ; l > 0 ; --l ) {
+			pGrid->mStripGrid[i][j] = 1;
+			i--;
+			j++;
+		}
+		return 1;
+	}
+
+	return 0;
+}
+
+int trySouth(SGrid * pGrid, const char * input, int inputSize, int startI, int startJ) {
+	int i = startI, j = startJ;
+	int k = 0, found = 0;
+	while ( input[k] == pGrid->mGrid[i][j] ) {
+		k++;
+		if ( k >= inputSize - 1 ) {
+			found = 1;
+			break;
+		}
+		i++;
+		if ( j < 0 || i >= pGrid->mCountY || j >= pGrid->mCountX || i < 0 ) {
+			break;
+		}
+	}
+
+	if ( found ) {
+		for ( int l = k ; l > 0 ; --l ) {
+			pGrid->mStripGrid[i][j] = 1;
+			i--;
+		}
+		return 1;
+	}
+
+	return 0;
+}
+
+int trySouthEast(SGrid * pGrid, const char * input, int inputSize, int startI, int startJ) {
+	int i = startI, j = startJ;
+	int k = 0, found = 0;
+	while ( input[k] == pGrid->mGrid[i][j] ) {
+		k++;
+		if ( k >= inputSize - 1 ) {
+			found = 1;
+			break;
+		}
+		i++;
+		j++;
+		if ( j < 0 || i >= pGrid->mCountY || j >= pGrid->mCountX || i < 0 ) {
+			break;
+		}
+	}
+
+	if ( found ) {
+		for ( int l = k ; l > 0 ; --l ) {
+			pGrid->mStripGrid[i][j] = 1;
+			i--;
+			j--;
+		}
+		return 1;
+	}
+
+	return 0;
+}
+
+int tryEast(SGrid * pGrid, const char * input, int inputSize, int startI, int startJ) {
+	int i = startI, j = startJ;
+	int k = 0, found = 0;
+	while ( input[k] == pGrid->mGrid[i][j] ) {
+		k++;
+		if ( k >= inputSize - 1 ) {
+			found = 1;
+			break;
+		}
+		j++;
+		if ( j < 0 || i >= pGrid->mCountY || j >= pGrid->mCountX || i < 0 ) {
+			break;
+		}
+	}
+
+	if ( found ) {
+		for ( int l = k ; l > 0 ; --l ) {
+			pGrid->mStripGrid[i][j] = 1;
+			j--;
+		}
+		return 1;
+	}
+
+	return 0;
+}
+
+int tryNorthEast(SGrid * pGrid, const char * input, int inputSize, int startI, int startJ) {
+	int i = startI, j = startJ;
+	int k = 0, found = 0;
+	while ( input[k] == pGrid->mGrid[i][j] ) {
+		k++;
+		if ( k >= inputSize - 1 ) {
+			found = 1;
+			break;
+		}
+		i--;
+		j++;
+		if ( j < 0 || i >= pGrid->mCountY || j >= pGrid->mCountX || i < 0 ) {
+			break;
+		}
+	}
+
+	if ( found ) {
+		for ( int l = k ; l > 0 ; --l ) {
+			pGrid->mStripGrid[i][j] = 1;
+			i++;
+			j--;
+		}
+		return 1;
+	}
+
+	return 0;
+}
+
 int searchForInput(SGrid * pGrid, char * input, int inputSize) {
 	int found = 0;
 
-	printf( "Searching for: %s - ", input );
+	//printf( "Searching for: %s - ", input );
 
 	for ( int i = 0 ; i < pGrid->mCountY ; ++i ) {
 		for ( int j = 0 ; j < pGrid->mCountX ; ++j ) {
 			if ( tryNorth( pGrid, input, inputSize, i, j ) == 1 ) {
-				printf("Found\n");
+//				printf( "Found\n" );
 				found = 1;
 			}
-			// todo tryNorthWest
-			// todo tryWest
-			// todo trySouthWest
-			// todo trySouth
-			// todo trySouthEast
-			// todo tryEast
-			// todo tryNorthEast
+			if ( tryNorthWest( pGrid, input, inputSize, i, j ) == 1 ) {
+				found = 1;
+//				printf( "Found\n" );
+			}
+			if ( tryWest( pGrid, input, inputSize, i, j ) == 1 ) {
+				found = 1;
+//				printf( "Found\n" );
+			}
+			if ( trySouthWest( pGrid, input, inputSize, i, j ) == 1 ) {
+				found = 1;
+//				printf( "Found\n" );
+			}
+			if ( trySouth( pGrid, input, inputSize, i, j ) == 1 ) {
+				found = 1;
+//				printf( "Found\n" );
+			}
+
+			if ( trySouthEast( pGrid, input, inputSize, i, j ) == 1 ) {
+				found = 1;
+//				printf( "Found\n" );
+			}
+
+			if ( tryEast( pGrid, input, inputSize, i, j ) == 1 ) {
+				found = 1;
+//				printf( "Found\n" );
+			}
+
+			if ( tryNorthEast( pGrid, input, inputSize, i, j ) == 1 ) {
+				found = 1;
+//				printf( "Found\n" );
+			}
 		}
 	}
 
@@ -270,7 +487,6 @@ int readQuery(SGrid * grid) {
 		free( input );
 		return 1;
 	}
-	return 1;
 }
 
 int main() {
