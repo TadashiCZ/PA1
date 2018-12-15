@@ -77,13 +77,17 @@ int loadLine(SGrid * grid) {
 			return 1;
 		}
 
+		grid->mGrid[grid->mCountY][counter] = c;
 		counter++;
 		first = 0;
 		if ( counter > grid->mCountX ) {
+			free( grid->mGrid[grid->mCountY] );
 			return -1;
 		}
 
-		if ( counter > grid->mSizeX ) {
+
+
+		if ( counter >= grid->mSizeX ) {
 			grid->mSizeX *= 2;
 			grid->mGrid[grid->mCountY] = ( char * ) realloc( grid->mGrid[grid->mCountY], grid->mSizeX * sizeof( char ) );
 		}
@@ -93,6 +97,9 @@ int loadLine(SGrid * grid) {
 		free( grid->mGrid[grid->mCountY] );
 		return -1;
 	}
+
+	grid->mSizeX = grid->mCountX;
+	grid->mGrid[grid->mCountY] = ( char * ) realloc( grid->mGrid[grid->mCountY], grid->mSizeX * sizeof( char ) );
 
 	grid->mCountY++;
 	return 0;
@@ -162,31 +169,6 @@ void printSelection(SGrid * pGrid) {
 	if ( output ) {
 		printf( "\n" );
 	}
-}
-
-void printGridInfo(SGrid * grid) {
-	printf( "Grid:\n" );
-	printf( "SizeY: %d, SizeX: %d, CountY: %d, CountX: %d, hasStrip: %d\n", grid->mSizeY, grid->mSizeX, grid->mCountY,
-	        grid->mCountX, grid->mHasStrip );
-
-	for ( int i = 0 ; i < grid->mCountY ; ++i ) {
-		for ( int j = 0 ; j < grid->mCountX ; ++j ) {
-			printf( "%c", grid->mGrid[i][j] );
-		}
-		printf( "\n" );
-	}
-	if ( grid->mHasStrip ) {
-		printf( "\n" );
-		for ( int i = 0 ; i < grid->mCountY ; ++i ) {
-			for ( int j = 0 ; j < grid->mCountX ; ++j ) {
-				printf( "%d", grid->mStripGrid[i][j] );
-			}
-			printf( "\n" );
-		}
-	}
-	printf( "\n\n" );
-
-
 }
 
 int tryNorth(SGrid * pGrid, const char * input, int inputSize, int startI, int startJ) {
@@ -408,44 +390,34 @@ int tryNorthEast(SGrid * pGrid, const char * input, int inputSize, int startI, i
 int searchForInput(SGrid * pGrid, char * input, int inputSize) {
 	int found = 0;
 
-	//printf( "Searching for: %s - ", input );
-
 	for ( int i = 0 ; i < pGrid->mCountY ; ++i ) {
 		for ( int j = 0 ; j < pGrid->mCountX ; ++j ) {
 			if ( tryNorth( pGrid, input, inputSize, i, j ) == 1 ) {
-//				printf( "Found\n" );
 				found = 1;
 			}
 			if ( tryNorthWest( pGrid, input, inputSize, i, j ) == 1 ) {
 				found = 1;
-//				printf( "Found\n" );
 			}
 			if ( tryWest( pGrid, input, inputSize, i, j ) == 1 ) {
 				found = 1;
-//				printf( "Found\n" );
 			}
 			if ( trySouthWest( pGrid, input, inputSize, i, j ) == 1 ) {
 				found = 1;
-//				printf( "Found\n" );
 			}
 			if ( trySouth( pGrid, input, inputSize, i, j ) == 1 ) {
 				found = 1;
-//				printf( "Found\n" );
 			}
 
 			if ( trySouthEast( pGrid, input, inputSize, i, j ) == 1 ) {
 				found = 1;
-//				printf( "Found\n" );
 			}
 
 			if ( tryEast( pGrid, input, inputSize, i, j ) == 1 ) {
 				found = 1;
-//				printf( "Found\n" );
 			}
 
 			if ( tryNorthEast( pGrid, input, inputSize, i, j ) == 1 ) {
 				found = 1;
-//				printf( "Found\n" );
 			}
 		}
 	}
@@ -454,7 +426,6 @@ int searchForInput(SGrid * pGrid, char * input, int inputSize) {
 		return 0;
 	}
 
-	//printGridInfo(pGrid);
 	return 1;
 }
 
